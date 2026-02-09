@@ -1,29 +1,32 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import { buildValidationErrorMessage } from "../../utils/validatorErrors";
 
 class ProductController {
 	async store(req: Request, res: Response) {
 		try {
 			const schema = z.object({
-				name: z.string(),
-				price: z.number(),
-				description: z.string(),
-				quantity: z.number(),
-				categoryId: z.string(),
+				name: z.string('Nome é obrigatoria'),
+				price: z.number().positive("Preço precisa ser maior que zero"),
+				description: z.string().min(1, "Descrição é obrigatoria"),
+				quantity: z.number('Quantidade é obrigatoria').positive('Quantidade precisa ser maior que zero'),
+				categoryId: z.string('Categória é obrigatoria'),
 			});
 
-			const { name, price, description, quantity, categoryId } = schema.parse(
-				req.body,
-			);
+			const product = schema.safeParse(req.body);
 
-			if (!name || !categoryId) {
-				return res
-					.status(400)
-					.json({ error: "Name and CategoryId are required" });
+			if (!product.success) {
+				const errors = buildValidationErrorMessage(product.error.issues);
+
+				return res.status(422).json({
+					message: errors,
+				});
 			}
 
-			const product = await prisma.product.create({
+			const { name, price, description, quantity, categoryId } = product.data;
+
+			const newProduct = await prisma.product.create({
 				data: {
 					name,
 					price,
@@ -40,11 +43,11 @@ class ProductController {
 				},
 			});
 
-			if (!product) {
+			if (!newProduct) {
 				return res.status(400).json({ error: "Produto não foi criado" });
 			}
 
-			return res.status(201).json(product);
+			return res.status(201).json(newProduct);
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao criar produto" });
@@ -124,6 +127,23 @@ class ProductController {
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao editar produto" });
+		}
+	}
+
+	async delete(req: Request, res: Response) {
+		try {
+			const { productId } = req.params
+
+			await prisma.product.delete({
+				where: {
+					id: String(productId),
+				},
+			});
+
+			return res.status(200).json({ message: "Produto deletado com sucesso" });
+		} catch (error) {
+			console.error(error);
+			return res.status(400).json({ error: "Erro ao deletar produto" });
 		}
 	}
 }

@@ -1,19 +1,26 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import { buildValidationErrorMessage } from "../../utils/validatorErrors";
 
 class CategoryController {
 	async store(req: Request, res: Response) {
 		try {
 			const schema = z.object({
-				name: z.string(),
+				name: z.string('Nome da categoria é obrigatorio'),
 			});
 
-			const { name } = schema.parse(req.body);
+			const category = schema.safeParse(req.body);
 
-			if (!name) {
-				return res.status(400).json({ error: "Nome é obrigatorio" });
+			if(!category.success){
+				const errors = buildValidationErrorMessage(category.error.issues);
+
+				return res.status(422).json({
+					message: errors,
+				});
 			}
+
+			const { name } = category.data;
 
 			const existingCategory = await prisma.category.findUnique({
 				where: {
@@ -25,13 +32,13 @@ class CategoryController {
 				return res.status(400).json({ error: "Esta categoria já existe" });
 			}
 
-			const category = await prisma.category.create({
+			const newCategory = await prisma.category.create({
 				data: {
 					name,
 				},
 			});
 
-			return res.status(201).json(category);
+			return res.status(201).json(newCategory);
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao criar categoria" });
