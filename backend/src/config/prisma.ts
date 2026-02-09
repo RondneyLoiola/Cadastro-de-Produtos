@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { PrismaClient } from "../../prisma/generated/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+	datasourceUrl: String(process.env.DATABASE_URL),
+});
 
 export const prismaConnect = async () => {
 	console.log("Conectando ao banco de dados...");
