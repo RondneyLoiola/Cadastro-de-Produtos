@@ -2,8 +2,11 @@ import { Router } from "express";
 import CategoryController from "./app/controllers/categoryController";
 import productController from "./app/controllers/productController";
 import UserController from "./app/controllers/userController";
+import sessionController from "./app/controllers/sessionController";
 
 const router = Router();
+
+router.post('/session', sessionController.store)
 
 router.post('/user', UserController.store);
 router.get('/user', UserController.index);

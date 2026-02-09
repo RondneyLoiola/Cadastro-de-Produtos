@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
 import { buildValidationErrorMessage } from "../../utils/validatorErrors";
-
+import bcrypt from 'bcrypt';
 class UserController {
 	async store(req: Request, res: Response) {
 		try {
@@ -33,13 +33,15 @@ class UserController {
 				return res.status(400).json({ error: "Usuário com esse email ja cadastrado" });
 			}
 
+			const passwordHash = await bcrypt.hash(user.data.password, 10);
+
 			const newUser = await prisma.user.create({
 				data: {
 					name: user.data.name,
 					email: user.data.email,
-					password: user.data.password,
+					password: passwordHash,
 					isAdmin: user.data.isAdmin,
-				},
+				}
 			});
 
 			return res.status(201).json(newUser);
@@ -50,9 +52,16 @@ class UserController {
 
 	async index(_req: Request, res: Response) {
 		try {
-			const users = await prisma.user.findMany();
+			const users = await prisma.user.findMany({
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					isAdmin: true
+				}
+			});
 
-			if (!users) {
+			if (users.length === 0) {
 				return res.status(400).json({ error: "Nenhum usuário encontrado" });
 			}
 
@@ -69,6 +78,12 @@ class UserController {
 			const user = await prisma.user.findUnique({
 				where: {
 					id: String(userId),
+				},
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					isAdmin: true
 				}
 			})
 
