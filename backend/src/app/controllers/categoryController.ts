@@ -12,7 +12,7 @@ class CategoryController {
             const {name} = schema.parse(req.body)
 
             if(!name) {
-                return res.status(400).json({error: 'Name is required'})
+                return res.status(400).json({error: 'Nome é obrigatorio'})
             }
 
             const existingCategory = await prisma.category.findUnique({
@@ -22,7 +22,7 @@ class CategoryController {
             })
 
             if(existingCategory) {
-                return res.status(400).json({error: 'Category already exists'})
+                return res.status(400).json({error: 'Esta categoria já existe'})
             }
 
             const category = await prisma.category.create({
@@ -34,7 +34,7 @@ class CategoryController {
             return res.status(201).json(category)
         } catch (error) {
             console.error(error)
-            console.log('❌ Erro ao criar categoria')
+            return res.status(400).json({error: 'Erro ao criar categoria'})
         }
     }
 
@@ -45,35 +45,38 @@ class CategoryController {
             return res.status(200).json(categories)
         } catch (error) {
             console.error(error)
-            console.log('❌ Erro ao listar categorias')
+            return res.status(400).json({error: 'Erro ao listar categorias'})
         }
     }
 
     async show(req: Request, res: Response) {
         try {
-            const {_id} = req.params
+            const {categoryId} = req.params
 
             const category = await prisma.category.findUnique({
                 where: {
-                    id: String(_id)
+                    id: String(categoryId)
+                },
+                include: {
+                    product: true
                 }
             })
 
             return res.status(200).json(category)
         } catch (error) {
             console.error(error)
-            console.log('❌ Erro ao listar categoria')
+            return res.status(400).json({error: 'Erro ao listar categoria'})
         }
     }
 
     async update(req: Request, res: Response) {
         try {
-            const { _id } = req.params
+            const { categoryId} = req.params
             const { name } = req.body
 
             const category = await prisma.category.update({
                 where: {
-                    id: String(_id)
+                    id: String(categoryId)
                 },
                 data: {
                     name
@@ -83,24 +86,24 @@ class CategoryController {
             return res.status(200).json(category)
         } catch (error) {
             console.error(error)    
-            console.log('❌ Erro ao atualizar categoria') 
+            return res.status(400).json({error: 'Erro ao atualizar categoria'})
         }
     }
 
     async delete(req: Request, res: Response) {
         try {
-            const { _id } = req.params
+            const {categoryId } = req.params
 
             const category = await prisma.category.delete({
                 where: {
-                    id: String(_id)
+                    id: String(categoryId)
                 }
             })
 
             return res.status(200).json(category)
         } catch (error) {
             console.error(error)
-            console.log('❌ Erro ao deletar categoria')
+            return res.status(400).json({error: 'Erro ao deletar categoria'})
         }
     }
 }

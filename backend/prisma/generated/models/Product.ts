@@ -333,7 +333,7 @@ export type ProductUpdateInput = {
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  category?: Prisma.CategoryUpdateOneRequiredWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneRequiredWithoutProductNestedInput | undefined
 }
 
 export type ProductUncheckedUpdateInput = {
@@ -343,7 +343,7 @@ export type ProductUncheckedUpdateInput = {
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string | undefined
 }
 
 export type ProductCreateManyInput = {
