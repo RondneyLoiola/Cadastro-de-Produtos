@@ -1,22 +1,23 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
 
-import app from './app'
-import { prismaConnect } from './config/prisma'
+dotenv.config();
 
-const port = process.env.PORT
+import app from "./app";
+import { prismaConnect } from "./config/prisma";
+
+const port = process.env.PORT;
 
 const startServer = async () => {
-    try {
-        await prismaConnect()
+	try {
+		await prismaConnect();
 
-        app.listen(port, () => {
-            console.log(`🚀 Servidor rodando na porta ${port}`)
-        })
-    } catch (error) {
-        console.log(error)
-        console.log('❌ Erro ao iniciar o servidor')
-    }
-}
+		app.listen(port, () => {
+			console.log(`🚀 Servidor rodando na porta ${port}`);
+		});
+	} catch (error) {
+		console.log(error);
+		console.log("❌ Erro ao iniciar o servidor");
+	}
+};
 
-startServer()
+startServer();
