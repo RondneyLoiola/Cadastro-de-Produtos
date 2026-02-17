@@ -4,6 +4,7 @@ import productController from "./app/controllers/productController";
 import sessionController from "./app/controllers/sessionController";
 import UserController from "./app/controllers/userController";
 import { requireAdmin } from "./app/middleware/auth";
+import { upload } from "./config/multer";
 
 const router = Router();
 
@@ -24,10 +25,10 @@ router.delete(
 	CategoryController.delete,
 );
 
-router.post("/products", requireAdmin, productController.store);
+router.post("/products", requireAdmin, upload.single("image"), productController.store);
 router.get("/products", productController.index);
 router.get("/products/:productId", productController.show);
-router.put("/products/:productId", requireAdmin, productController.edit);
+router.put("/products/:productId", requireAdmin, upload.single("image"), productController.edit);
 router.delete("/products/:productId", requireAdmin, productController.delete);
 
 export default router;

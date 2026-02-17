@@ -8,9 +8,9 @@ class ProductController {
 		try {
 			const schema = z.object({
 				name: z.string('Nome é obrigatoria'),
-				price: z.number().positive("Preço precisa ser maior que zero"),
+				price: z.coerce.number().positive("Preço precisa ser maior que zero"),
 				description: z.string().min(1, "Descrição é obrigatoria"),
-				quantity: z.number('Quantidade é obrigatoria').positive('Quantidade precisa ser maior que zero'),
+				quantity: z.coerce.number('Quantidade é obrigatoria').positive('Quantidade precisa ser maior que zero'),
 				categoryId: z.string('Categória é obrigatoria'),
 			});
 
@@ -25,6 +25,7 @@ class ProductController {
 			}
 
 			const { name, price, description, quantity, categoryId } = product.data;
+			const image = req.file?.filename
 
 			const newProduct = await prisma.product.create({
 				data: {
@@ -32,6 +33,7 @@ class ProductController {
 					price,
 					description,
 					quantity,
+					image: image ?? null,
 					category: {
 						connect: {
 							id: categoryId,
