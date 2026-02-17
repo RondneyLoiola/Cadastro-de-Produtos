@@ -1,15 +1,18 @@
+import bcrypt from "bcrypt";
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
 import { buildValidationErrorMessage } from "../../utils/validatorErrors";
-import bcrypt from 'bcrypt';
+
 class UserController {
 	async store(req: Request, res: Response) {
 		try {
 			const schema = z.object({
-				name: z.string().min(1, 'Nome é necessário'),
-				email: z.email('Email inválido'),
-				password: z.string().min(6, 'Senha precisa ter pelo menos 6 caracteres'),
+				name: z.string().min(1, "Nome é necessário"),
+				email: z.email("Email inválido"),
+				password: z
+					.string()
+					.min(6, "Senha precisa ter pelo menos 6 caracteres"),
 				isAdmin: z.boolean().default(false),
 			});
 
@@ -26,11 +29,13 @@ class UserController {
 			const userExists = await prisma.user.findUnique({
 				where: {
 					email: user.data.email,
-				}
-			})
+				},
+			});
 
-			if(userExists) {
-				return res.status(400).json({ error: "Usuário com esse email ja cadastrado" });
+			if (userExists) {
+				return res
+					.status(400)
+					.json({ error: "Usuário com esse email ja cadastrado" });
 			}
 
 			const passwordHash = await bcrypt.hash(user.data.password, 10);
@@ -41,7 +46,7 @@ class UserController {
 					email: user.data.email,
 					password: passwordHash,
 					isAdmin: user.data.isAdmin,
-				}
+				},
 			});
 
 			return res.status(201).json(newUser);
@@ -57,8 +62,8 @@ class UserController {
 					id: true,
 					name: true,
 					email: true,
-					isAdmin: true
-				}
+					isAdmin: true,
+				},
 			});
 
 			if (users.length === 0) {
@@ -71,7 +76,7 @@ class UserController {
 		}
 	}
 
-	async getUserById(req: Request, res: Response){
+	async getUserById(req: Request, res: Response) {
 		try {
 			const { userId } = req.params;
 
@@ -83,11 +88,11 @@ class UserController {
 					id: true,
 					name: true,
 					email: true,
-					isAdmin: true
-				}
-			})
+					isAdmin: true,
+				},
+			});
 
-			if(!user){
+			if (!user) {
 				return res.status(400).json({ error: "Usuário n]ao encontrado" });
 			}
 
@@ -105,7 +110,7 @@ class UserController {
 				where: {
 					id: String(userId),
 				},
-			})
+			});
 
 			return res.status(200).json({ message: "Usuário deletado com sucesso" });
 		} catch (error) {

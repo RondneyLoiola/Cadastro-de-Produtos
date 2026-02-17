@@ -1,28 +1,33 @@
 import { Router } from "express";
 import CategoryController from "./app/controllers/categoryController";
 import productController from "./app/controllers/productController";
-import UserController from "./app/controllers/userController";
 import sessionController from "./app/controllers/sessionController";
+import UserController from "./app/controllers/userController";
+import { requireAdmin } from "./app/middleware/auth";
 
 const router = Router();
 
-router.post('/session', sessionController.store)
+router.post("/session", sessionController.store);
 
-router.post('/user', UserController.store);
-router.get('/user', UserController.index);
-router.get('/user/:userId', UserController.getUserById);
-router.delete('/user/:userId', UserController.delete);
+router.post("/user", UserController.store);
+router.get("/user", UserController.index);
+router.get("/user/:userId", UserController.getUserById);
+router.delete("/user/:userId", UserController.delete);
 
-router.post("/categories", CategoryController.store);
+router.post("/categories", requireAdmin, CategoryController.store);
 router.get("/categories", CategoryController.index);
 router.get("/categories/:categoryId", CategoryController.show);
-router.put("/categories/:categoryId", CategoryController.update);
-router.delete("/categories/:categoryId", CategoryController.delete);
+router.put("/categories/:categoryId", requireAdmin, CategoryController.update);
+router.delete(
+	"/categories/:categoryId",
+	requireAdmin,
+	CategoryController.delete,
+);
 
-router.post("/products", productController.store);
+router.post("/products", requireAdmin, productController.store);
 router.get("/products", productController.index);
 router.get("/products/:productId", productController.show);
-router.put("/products/:productId", productController.edit);
-router.delete("/products/:productId", productController.delete);
+router.put("/products/:productId", requireAdmin, productController.edit);
+router.delete("/products/:productId", requireAdmin, productController.delete);
 
 export default router;
