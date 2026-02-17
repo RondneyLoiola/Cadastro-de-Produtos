@@ -7,11 +7,13 @@ class ProductController {
 	async store(req: Request, res: Response) {
 		try {
 			const schema = z.object({
-				name: z.string('Nome é obrigatoria'),
+				name: z.string("Nome é obrigatoria"),
 				price: z.coerce.number().positive("Preço precisa ser maior que zero"),
 				description: z.string().min(1, "Descrição é obrigatoria"),
-				quantity: z.coerce.number('Quantidade é obrigatoria').positive('Quantidade precisa ser maior que zero'),
-				categoryId: z.string('Categória é obrigatoria'),
+				quantity: z.coerce
+					.number("Quantidade é obrigatoria")
+					.positive("Quantidade precisa ser maior que zero"),
+				categoryId: z.string("Categória é obrigatoria"),
 			});
 
 			const product = schema.safeParse(req.body);
@@ -25,7 +27,7 @@ class ProductController {
 			}
 
 			const { name, price, description, quantity, categoryId } = product.data;
-			const image = req.file?.filename
+			const image = req.file?.filename;
 
 			const newProduct = await prisma.product.create({
 				data: {
@@ -73,7 +75,14 @@ class ProductController {
 				return res.status(400).json({ error: "Produtos não encontrados" });
 			}
 
-			return res.status(200).json(products);
+			const productsWithImageUrl = products.map((product) => ({
+				...product,
+				image: product.image
+					? `http://localhost:3001/product-file/${product.image}`
+					: null,
+			}));
+
+			return res.status(200).json(productsWithImageUrl);
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao listar produtos" });
@@ -91,8 +100,14 @@ class ProductController {
 			if (!product) {
 				return res.status(400).json({ error: "Produto nao encontrado" });
 			}
+			const productWithImageUrl = {
+				...product,
+				image: product.image
+					? `http://localhost:3001/product-file/${product.image}`
+					: null,
+			};
 
-			return res.status(200).json(product);
+			return res.status(200).json(productWithImageUrl);
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao listar produto" });
@@ -134,7 +149,7 @@ class ProductController {
 
 	async delete(req: Request, res: Response) {
 		try {
-			const { productId } = req.params
+			const { productId } = req.params;
 
 			await prisma.product.delete({
 				where: {
