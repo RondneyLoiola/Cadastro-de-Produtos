@@ -13,6 +13,7 @@ class ProductController {
 				quantity: z.coerce
 					.number("Quantidade é obrigatoria")
 					.positive("Quantidade precisa ser maior que zero"),
+				isActive: z.boolean().default(true),
 				categoryId: z.string("Categória é obrigatoria"),
 			});
 
@@ -26,7 +27,7 @@ class ProductController {
 				});
 			}
 
-			const { name, price, description, quantity, categoryId } = product.data;
+			const { name, price, description, quantity, categoryId, isActive } = product.data;
 			const image = req.file?.filename;
 
 			const newProduct = await prisma.product.create({
@@ -35,6 +36,7 @@ class ProductController {
 					price,
 					description,
 					quantity,
+					isActive,
 					image: image ?? null,
 					category: {
 						connect: {
@@ -116,7 +118,7 @@ class ProductController {
 
 	async edit(req: Request, res: Response) {
 		try {
-			const { name, price, description, quantity, categoryId } = req.body;
+			const { name, price, description, quantity, categoryId, isActive } = req.body;
 
 			const editProduct = await prisma.product.update({
 				where: {
@@ -128,6 +130,7 @@ class ProductController {
 					description,
 					quantity,
 					categoryId,
+					isActive
 				},
 				include: {
 					category: true,
