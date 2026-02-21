@@ -3,4 +3,10 @@
 body {
   font-family: 'Inter', sans-serif;
   outline: none;
+  min-height: 100vh;
+  background-color: #F6F7F8;
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4
 }

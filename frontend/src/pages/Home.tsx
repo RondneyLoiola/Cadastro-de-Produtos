@@ -1,7 +1,13 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: useEffect */
 
+//TODO: revisar backend
+//TODO: fazer footer
+//TODO: fazer zod
+//TODO: fazer página de produtos
+//TODO: fazer as funções para criar produto
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Image } from "lucide-react";
+import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -24,9 +30,9 @@ interface Product {
 }
 
 export const Home = () => {
-	const navigate = useNavigate();
+	const _navigate = useNavigate();
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [_products, setProducts] = useState<Product[]>([]);
+	const [_products, _setProducts] = useState<Product[]>([]);
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
@@ -35,8 +41,11 @@ export const Home = () => {
 		price: z.coerce
 			.number()
 			.positive("Preço do produto precisa ser maior que zero"),
-		quantity: z.coerce.number().positive("Quantidade precisa ser maior que zero"),
+		quantity: z.coerce
+			.number()
+			.positive("Quantidade precisa ser maior que zero"),
 		category: z.string().min(1, "Categoria é obrigatória"),
+		isActive: z.boolean().default(true),
 	});
 
 	const getCategories = async () => {
@@ -70,130 +79,129 @@ export const Home = () => {
 		// 	console.log(error);
 		// }
 
-		console.log('certo')
+		console.log("certo");
 	};
 
 	return (
-		<section className="w-full h-full bg-gray-100">
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="mx-auto py-8 p-4">
-					<div className="text-center mb-8">
-						<h1 className="text-3xl font-semibold text-gray-900 mb-2">
-							Cadastre um novo produto
-						</h1>
-						<p className="text-sm text-gray-500">
-							Preencha os detalhes essenciais para adicionar um novo item.
-						</p>
-					</div>
+		<section className="container py-6">
+			<div className="w-full">
+				<div className="flex flex-col gap-2">
+					<h1 className="md:text-4xl font-extrabold">Cadastrar Produto</h1>
+					<p className="text-xl text-gray-500">
+						Preencha as informações necessárias para cadastrar o produto
+					</p>
+				</div>
 
-					<form className="space-y-6">
-						<Input
-							label="Nome do Produto"
-							placeholder="Nome do Produto"
-							type="text"
-							{...register("name")}
-						/>
+				<form
+					onSubmit={handleSubmit(newProduct)}
+					className="flex items-start gap-4 mt-6 w-8xl"
+				>
+					{/* Lado Esquerdo */}
+					<div className="w-[70%] flex flex-col items-left justify-center gap-4 px-6 py-4 bg-white border border-blue-100 rounded-xl">
+						<div className="flex flex-col gap-6">
+							<div className="pb-2 border-b border-gray-200 mb-2">
+								<h2 className="text-2xl font-bold p-2">Informações básicas</h2>
+							</div>
 
-						<div className="grid grid-cols-2 gap-4">
-							<div>
+							<Input
+								placeholder="Nome do produto"
+								label="Nome do produto"
+								type="text"
+								{...register("name")}
+							/>
+							<div className="flex flex-col gap-2">
 								<label
-									className="block text-sm font-medium text-gray-900 mb-2"
-									htmlFor="categoria"
+									htmlFor="category"
+									className="block font-bold text-gray-700"
 								>
 									Categoria
 								</label>
 								<select
-									{...register("category")}
-									id="categoria"
-									className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									name="category"
+									className="text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								>
 									<option value="">Selecione uma categoria</option>
 									{categories.map((category) => (
-										<option key={category.id} value={category.name}>
+										<option key={category.id} value={category.id}>
 											{category.name}
 										</option>
 									))}
 								</select>
 							</div>
 
-							<Input
-								label="SKU / Referência"
-								placeholder="SKU-10293"
-								type="text"
-							/>
-						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<Input
-								label="Preço da unidade"
-								placeholder="R$ 0,00"
-								type="text"
-								{...register("price")}
-							/>
-							<Input
-								label="Quantidade no estoque"
-								placeholder="0"
-								type="number"
-								{...register("quantity")}
-							/>
-						</div>
-
-						<div className="flex items-center justify-between pt-2">
-							<div className="flex items-center gap-8">
-								<div className="flex items-center gap-3">
-									<label
-										htmlFor="status"
-										className="text-sm font-medium text-gray-900"
-									>
-										Status
-									</label>
-									<label className="relative inline-flex items-center cursor-pointer">
-										<input
-											type="checkbox"
-											id="status"
-											className="sr-only peer"
-											defaultChecked
-										/>
-										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.56 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-									</label>
+							<div className="w-full flex items-center justify-between gap-4">
+								<div className="w-1/2">
+									<Input
+										placeholder="R$ 0,00"
+										label="Preço do produto"
+										type="number"
+										{...register("price")}
+									/>
+								</div>
+								<div className="w-1/2">
+									<Input
+										placeholder="0"
+										label="Quantidade em estoque"
+										type="number"
+										{...register("quantity")}
+									/>
 								</div>
 							</div>
 
-							<button
-								type="button"
-								className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium"
-							>
-								<Image />
-								Adicionar Imagem
-							</button>
+							<div className="w-full flex flex-col gap-2">
+								<label
+									htmlFor="description"
+									className="block font-bold text-gray-700"
+								>
+									Descrição do Produto
+								</label>
+								<textarea
+									placeholder="Insira as especificações técnicas detalhadas do produto"
+									className="w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									name="description"
+								></textarea>
+							</div>
+						</div>
+					</div>
+
+					{/* Lado Direito */}
+					<div className="w-[30%] max-h-full flex flex-col items-left gap-6">
+						<div className="flex flex-col gap-4 bg-white px-6 py-4 border border-blue-100 rounded-xl">
+							<h2 className="text-2xl font-bold">Imagem do Produto</h2>
+							<div className="w-full h-56 bg-gray-200 rounded-xl border border-blue-100" />
 						</div>
 
-						<div className="flex gap-4 pt-4">
+						<div className="flex flex-col gap-4 bg-white p-6 border border-blue-100 rounded-xl">
+							<h2 className="text-2xl font-bold">Configurações</h2>
+							<div className="flex items-center justify-between">
+								<label htmlFor="status" className="">
+									Produto Ativo
+								</label>
+								<label className="relative inline-flex items-center cursor-pointer">
+									<input
+										className="sr-only peer"
+										type="checkbox"
+										value=""
+										{...register("isActive")}
+									/>
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+								</label>
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-2 mt-auto">
 							<Button
-								variant="primary"
 								type="submit"
-								onClick={newProduct}
+								className="flex items-center justify-center gap-2"
 							>
-								Salvar Produto
+								<Save /> Salvar Produto
 							</Button>
-							<Button
-								variant="secondary"
-								type="reset"
-							>
+							<Button type="button" variant="secondary">
 								Cancelar
 							</Button>
 						</div>
-						<div className="flex items-center justify-center">
-							<button
-								className="text-blue-700 hover:text-blue-600 hover:underline"
-								type="button"
-								onClick={() => navigate("/produtos")}
-							>
-								Ver Produtos
-							</button>
-						</div>
-					</form>
-				</div>
+					</div>
+				</form>
 			</div>
 		</section>
 	);
