@@ -1,14 +1,18 @@
+import { useLocation } from "react-router";
+
 export const Header = () => {
+	const {pathname} = useLocation();
+
 	return (
 		<header className="w-full p-4 bg-white border-b border-blue-100">
 			<div className="flex items-center justify-between">
 				<h2>ERP NEXUS</h2>
 
 				<div className="flex items-center justify-center gap-4">
-					<ul className="font-bold hover:text-gray-700">
+					<ul className={`${pathname === '/' ? 'font-bold text-blue-500' : 'text-gray-500'} font-bold hover:text-gray-700`}>
 						<a href="/">Novo Produto</a>
 					</ul>
-					<ul className="font-bold hover:text-gray-700 text-gray-400">
+					<ul className={`${pathname === '/produtos' ? 'font-bold text-blue-500' : 'text-gray-500'} font-bold hover:text-gray-700`}>
 						<a href="/produtos">Ver Produtos</a>
 					</ul>
 				</div>

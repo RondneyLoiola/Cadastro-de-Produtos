@@ -220,7 +220,7 @@ export type ProductGroupByOutputType = {
   description: string
   quantity: number
   image: string | null
-  isActive: boolean
+  isActive: boolean | null
   createdAt: Date
   updatedAt: Date
   categoryId: string
@@ -256,7 +256,7 @@ export type ProductWhereInput = {
   description?: Prisma.StringFilter<"Product"> | string
   quantity?: Prisma.FloatFilter<"Product"> | number
   image?: Prisma.StringNullableFilter<"Product"> | string | null
-  isActive?: Prisma.BoolFilter<"Product"> | boolean
+  isActive?: Prisma.BoolNullableFilter<"Product"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   categoryId?: Prisma.StringFilter<"Product"> | string
@@ -287,7 +287,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"Product"> | string
   quantity?: Prisma.FloatFilter<"Product"> | number
   image?: Prisma.StringNullableFilter<"Product"> | string | null
-  isActive?: Prisma.BoolFilter<"Product"> | boolean
+  isActive?: Prisma.BoolNullableFilter<"Product"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   categoryId?: Prisma.StringFilter<"Product"> | string
@@ -322,7 +322,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   description?: Prisma.StringWithAggregatesFilter<"Product"> | string
   quantity?: Prisma.FloatWithAggregatesFilter<"Product"> | number
   image?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
-  isActive?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
+  isActive?: Prisma.BoolNullableWithAggregatesFilter<"Product"> | boolean | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   categoryId?: Prisma.StringWithAggregatesFilter<"Product"> | string
@@ -335,7 +335,7 @@ export type ProductCreateInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutProductInput
@@ -348,7 +348,7 @@ export type ProductUncheckedCreateInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categoryId: string
@@ -360,7 +360,7 @@ export type ProductUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutProductNestedInput
@@ -372,7 +372,7 @@ export type ProductUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -385,7 +385,7 @@ export type ProductCreateManyInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categoryId: string
@@ -397,7 +397,7 @@ export type ProductUpdateManyMutationInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,7 +408,7 @@ export type ProductUncheckedUpdateManyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -528,6 +528,11 @@ export type NullableStringFieldUpdateOperationsInput = {
   unset?: boolean
 }
 
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
+  unset?: boolean
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -539,7 +544,7 @@ export type ProductCreateWithoutCategoryInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -551,7 +556,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -591,7 +596,7 @@ export type ProductScalarWhereInput = {
   description?: Prisma.StringFilter<"Product"> | string
   quantity?: Prisma.FloatFilter<"Product"> | number
   image?: Prisma.StringNullableFilter<"Product"> | string | null
-  isActive?: Prisma.BoolFilter<"Product"> | boolean
+  isActive?: Prisma.BoolNullableFilter<"Product"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   categoryId?: Prisma.StringFilter<"Product"> | string
@@ -604,7 +609,7 @@ export type ProductCreateManyCategoryInput = {
   description: string
   quantity: number
   image?: string | null
-  isActive: boolean
+  isActive?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -615,7 +620,7 @@ export type ProductUpdateWithoutCategoryInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -626,7 +631,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -637,7 +642,7 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -690,7 +695,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     description: string
     quantity: number
     image: string | null
-    isActive: boolean
+    isActive: boolean | null
     createdAt: Date
     updatedAt: Date
     categoryId: string

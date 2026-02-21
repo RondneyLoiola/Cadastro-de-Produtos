@@ -10,11 +10,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
 import { z } from "zod";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { api } from "../services/api";
+
+enum isActive  {
+	ATIVO = "Ativo",
+	INATIVO = "Inativo",
+} 
 
 interface Category {
 	id: number;
@@ -27,17 +31,18 @@ interface Product {
 	price: number;
 	description: string;
 	quantity: number;
+	category: Category;
+	isActive: isActive;
+	imageUrl: string;
 }
 
 export const Home = () => {
-	const _navigate = useNavigate();
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [_products, _setProducts] = useState<Product[]>([]);
+	const [products, setProducts] = useState<Product[]>([]);
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
 		description: z.string().min(1, "Coloque a descrição do produto"),
-		image: z.string(),
 		price: z.coerce
 			.number()
 			.positive("Preço do produto precisa ser maior que zero"),
@@ -58,8 +63,19 @@ export const Home = () => {
 		}
 	};
 
+	const getProducts = async () => {
+			try {
+				const { data } = await api.get("/products");
+				console.log(data)
+				setProducts(data);
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
 	useEffect(() => {
 		getCategories();
+		getProducts();
 	}, []);
 
 	const {
@@ -104,6 +120,7 @@ export const Home = () => {
 							</div>
 
 							<Input
+								className={errors.name ? "border-red-500" : ""}
 								placeholder="Nome do produto"
 								label="Nome do produto"
 								type="text"
@@ -118,7 +135,7 @@ export const Home = () => {
 								</label>
 								<select
 									name="category"
-									className="text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									className={`${errors.category ? "border-red-500" : ""} text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
 								>
 									<option value="">Selecione uma categoria</option>
 									{categories.map((category) => (
@@ -132,6 +149,7 @@ export const Home = () => {
 							<div className="w-full flex items-center justify-between gap-4">
 								<div className="w-1/2">
 									<Input
+										className={errors.price ? "border-red-500" : ""}
 										placeholder="R$ 0,00"
 										label="Preço do produto"
 										type="number"
@@ -140,6 +158,7 @@ export const Home = () => {
 								</div>
 								<div className="w-1/2">
 									<Input
+										className={errors.quantity ? "border-red-500" : ""}
 										placeholder="0"
 										label="Quantidade em estoque"
 										type="number"
@@ -157,7 +176,7 @@ export const Home = () => {
 								</label>
 								<textarea
 									placeholder="Insira as especificações técnicas detalhadas do produto"
-									className="w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									className={`${errors.description ? "border-red-500" : ""} w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
 									name="description"
 								></textarea>
 							</div>

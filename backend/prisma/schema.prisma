@@ -30,7 +30,7 @@ model Product {
   quantity    Float
   image       String?
   imageUrl    String?  @ignore
-  isActive    Boolean
+  isActive    Boolean?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
