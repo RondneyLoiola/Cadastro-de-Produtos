@@ -1,4 +1,3 @@
-import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Card, IsActive } from "../components/Card";
@@ -61,13 +60,10 @@ export const Products = () => {
 				<div className="flex p-3 bg-white mt-4 rounded-xl border border-blue-200">
 					<div className="w-full flex gap-6 items-center justify-center">
 						<div className="w-full">
-							<div className="w-6 absolute left-88 top-59">
-								<Search className="text-gray-400" />
-							</div>
 							<input
 								placeholder="Pesquise pelo nome do produto"
 								type="text"
-								className="w-full pl-10 px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							/>
 						</div>
 

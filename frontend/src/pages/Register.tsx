@@ -103,22 +103,22 @@ export const Register = () => {
                 <form className='w-full p-4 flex flex-col gap-6' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex flex-col'>
                         <Input label="Nome Completo" placeholder='Digite seu nome completo' type='text' {...register("name")} className={errors.name ? "border-red-500" : ""} />
-                        <p className='text-red-500'>{errors.name?.message}</p>
+                        {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
                     </div>
 
                     <div className='flex flex-col'>
                         <Input label="Email" placeholder='example@example.com' type='email' {...register("email")} className={errors.email ? "border-red-500" : ""} />
-                        <p className='text-red-500'>{errors.email?.message}</p>
+                        {errors.email && <p className='text-red-500'>{errors.email.message}</p>}
                     </div>
 
                     <div className='flex flex-col'>
                         <Input label="Senha" placeholder='Crie um senha forte' type='password' {...register("password")} className={errors.password ? "border-red-500" : ""} />
-                        <p className='text-red-500'>{errors.password?.message}</p>
+                        {errors.password && <p className='text-red-500'>{errors.password.message}</p>}
                     </div>
 
                     <div className='flex flex-col'>
                         <Input label="Confirmar senha" placeholder='Repita sua senha' type='password' {...register("confirmPassword")} className={errors.confirmPassword ? "border-red-500" : ""} />
-                        <p className='text-red-500'>{errors.confirmPassword?.message}</p>
+                        {errors.confirmPassword && <p className='text-red-500'>{errors.confirmPassword.message}</p>}
                     </div>
                     <Button type="submit">Cadastrar</Button>
                     <div className='flex flex-col gap-4 items-center justify-center'>
