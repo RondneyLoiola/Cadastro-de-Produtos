@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../components/Button";
+import { IsActive } from "../components/Card";
 import { Input } from "../components/Input";
 import { api } from "../services/api";
 
@@ -39,6 +40,25 @@ interface Product {
 export const Home = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [_products, setProducts] = useState<Product[]>([]);
+	const [imagePreview, setImagePreview] = useState<string | null>(null);
+	const [_selectedFile, setSelectedFile] = useState<File | null>(null);
+
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setSelectedFile(file);
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImagePreview(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const handleRemoveImage = () => {
+		setImagePreview(null);
+		setSelectedFile(null);
+	};
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
@@ -87,13 +107,13 @@ export const Home = () => {
 	});
 
 	const newProduct = async () => {
-		// try {
-		// 	const { data } = await api.post("/products");
-		// 	setProducts(data);
-		// 	console.log(data);
-		// } catch (error) {
-		// 	console.log(error);
-		// }
+		try {
+			const { data } = await api.post("/products");
+			setProducts(data);
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
 
 		console.log("certo");
 	};
@@ -187,7 +207,65 @@ export const Home = () => {
 					<div className="w-[30%] max-h-full flex flex-col items-left gap-6">
 						<div className="flex flex-col gap-4 bg-white px-6 py-4 border border-blue-100 rounded-xl">
 							<h2 className="text-2xl font-bold">Imagem do Produto</h2>
-							<div className="w-full h-56 bg-gray-200 rounded-xl border border-blue-100" />
+							{imagePreview ? (
+								<div className="relative w-full h-56 rounded-xl overflow-hidden border border-blue-100">
+									<img
+										src={imagePreview}
+										alt="Preview"
+										className="w-full h-full object-cover"
+									/>
+									<button
+										type="button"
+										onClick={handleRemoveImage}
+										className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="20"
+											height="20"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										>
+											<title>Remover imagem</title>
+											<line x1="18" y1="6" x2="6" y2="18" />
+											<line x1="6" y1="6" x2="18" y2="18" />
+										</svg>
+									</button>
+								</div>
+							) : (
+								<label className="flex flex-col items-center justify-center w-full h-56 bg-gray-200 rounded-xl border border-blue-100 cursor-pointer hover:bg-gray-300 transition-colors">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="40"
+										height="40"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										className="text-gray-500 mb-2"
+									>
+										<title>Ícone de upload de imagem</title>
+										<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+										<circle cx="8.5" cy="8.5" r="1.5" />
+										<polyline points="21 15 16 10 5 21" />
+									</svg>
+									<span className="text-gray-500 text-sm">
+										Clique para selecionar uma imagem
+									</span>
+									<input
+										type="file"
+										className="hidden"
+										accept="image/*"
+										onChange={handleImageChange}
+									/>
+								</label>
+							)}
 						</div>
 
 						<div className="flex flex-col gap-4 bg-white p-6 border border-blue-100 rounded-xl">
@@ -200,7 +278,7 @@ export const Home = () => {
 									<input
 										className="sr-only peer"
 										type="checkbox"
-										value=""
+										value={IsActive.ATIVO}
 										{...register("isActive")}
 									/>
 									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
