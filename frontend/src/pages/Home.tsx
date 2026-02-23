@@ -77,7 +77,6 @@ export const Home = () => {
 		try {
 			const { data } = await api.get("/categories");
 			setCategories(data);
-			console.log(data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -86,7 +85,6 @@ export const Home = () => {
 	const getProducts = async () => {
 		try {
 			const { data } = await api.get("/products");
-			console.log(data);
 			setProducts(data);
 		} catch (error) {
 			console.log(error);
@@ -115,7 +113,7 @@ export const Home = () => {
 			console.log(error);
 		}
 
-		console.log("certo");
+		console.log("Produto cadastrado com sucesso!");
 	};
 
 	return (
@@ -139,14 +137,18 @@ export const Home = () => {
 								<h2 className="text-2xl font-bold p-2">Informações básicas</h2>
 							</div>
 
-							<Input
-								className={errors.name ? "border-red-500" : ""}
-								placeholder="Nome do produto"
-								label="Nome do produto"
-								type="text"
-								{...register("name")}
-							/>
-							<div className="flex flex-col gap-2">
+							<div className="flex flex-col">
+								<Input
+									className={errors.name ? "border-red-500" : ""}
+									placeholder="Nome do produto"
+									label="Nome do produto"
+									type="text"
+									{...register("name")}
+								/>
+								<p className="text-red-500">{errors ? errors.name?.message : ""}</p>
+							</div>
+
+							<div className="flex flex-col">
 								<label
 									htmlFor="category"
 									className="block font-bold text-gray-700"
@@ -154,7 +156,7 @@ export const Home = () => {
 									Categoria
 								</label>
 								<select
-									name="category"
+									{...register("category")}
 									className={`${errors.category ? "border-red-500" : ""} text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
 								>
 									<option value="">Selecione uma categoria</option>
@@ -164,6 +166,7 @@ export const Home = () => {
 										</option>
 									))}
 								</select>
+								<p className="text-red-500">{errors ? errors.category?.message : ""}</p>
 							</div>
 
 							<div className="w-full flex items-center justify-between gap-4">
@@ -175,6 +178,7 @@ export const Home = () => {
 										type="number"
 										{...register("price")}
 									/>
+									<p className="text-red-500">{errors ? errors.price?.message : ""}</p>
 								</div>
 								<div className="w-1/2">
 									<Input
@@ -184,6 +188,7 @@ export const Home = () => {
 										type="number"
 										{...register("quantity")}
 									/>
+									<p className="text-red-500">{errors ? errors.quantity?.message : ""}</p>
 								</div>
 							</div>
 
@@ -197,8 +202,9 @@ export const Home = () => {
 								<textarea
 									placeholder="Insira as especificações técnicas detalhadas do produto"
 									className={`${errors.description ? "border-red-500" : ""} w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-									name="description"
+									{...register("description")}
 								></textarea>
+								<p className="text-red-500">{errors ? errors.description?.message : ""}</p>
 							</div>
 						</div>
 					</div>

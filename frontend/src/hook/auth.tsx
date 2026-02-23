@@ -27,7 +27,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({children}: UserProviderProps) => {
     const [userInfo, setUserInfo] = useState<UserData | null>(null);
-    console.log(userInfo);
     const [loading, setLoading] = useState(true);
 
     const putUserData = (userInfo: UserData) => {
