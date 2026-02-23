@@ -1,11 +1,6 @@
 import type React from "react";
 import { PriceConverter } from "../utils/priceConverter";
 
-enum IsActive {
-	ATIVO = "Ativo",
-	INATIVO = "Inativo",
-}
-
 interface ProductCardProps {
 	name: string;
 	category: string;
@@ -13,7 +8,7 @@ interface ProductCardProps {
 	price: number;
 	quantity: number;
 	imageUrl: string;
-	isActive?: IsActive;
+	isActive?: boolean;
 }
 
 // 🎨 Função de Estoque com Switch/Case e Cores Dinâmicas
@@ -84,29 +79,20 @@ interface StatusBadge {
 	textColor: string;
 }
 
-const getStatusBadge = (status: IsActive): StatusBadge => {
-	switch (status) {
-		case IsActive.ATIVO:
-			return {
-				label: "ATIVO",
-				bgColor: "bg-teal-100",
-				textColor: "text-teal-700",
-			};
-
-		case IsActive.INATIVO:
-			return {
-				label: "INATIVO",
-				bgColor: "bg-gray-200",
-				textColor: "text-gray-700",
-			};
-
-		default:
-			return {
-				label: "ATIVO",
-				bgColor: "bg-teal-100",
-				textColor: "text-teal-700",
-			};
+const getStatusBadge = (isActive: boolean): StatusBadge => {
+	if (isActive) {
+		return {
+			label: "ATIVO",
+			bgColor: "bg-teal-100",
+			textColor: "text-teal-700",
+		};
 	}
+
+	return {
+		label: "INATIVO",
+		bgColor: "bg-gray-200",
+		textColor: "text-gray-700",
+	};
 };
 
 export const Card: React.FC<ProductCardProps> = ({
@@ -116,7 +102,7 @@ export const Card: React.FC<ProductCardProps> = ({
 	price,
 	quantity,
 	imageUrl,
-	isActive = IsActive.ATIVO,
+	isActive = true,
 }) => {
 	// Obtém o status do estoque com cores
 	const stockInfo = getStockWithColors(quantity);
@@ -128,9 +114,9 @@ export const Card: React.FC<ProductCardProps> = ({
 		<div className="w-80 h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
 			{/* Imagem do Produto */}
 			<div className="relative bg-gray-50">
-				<img src={imageUrl} alt={name} className="w-80 object-cover" />
+				<img src={imageUrl} alt={name} className="w-full h-48 object-contain" />
 
-				{/* Badge de Status - Sempre exibe com cor baseada no enum */}
+				{/* Badge de Status - Sempre exibe com cor baseada no boolean */}
 				<div
 					className={`absolute top-4 right-4 ${statusBadge.bgColor} ${statusBadge.textColor} px-3 py-1 rounded-full text-xs font-medium`}
 				>
@@ -149,7 +135,9 @@ export const Card: React.FC<ProductCardProps> = ({
 				<h3 className="text-gray-900 text-xl font-bold mb-2">{name}</h3>
 
 				{/* Descrição */}
-				<p className="text-gray-600 text-sm mb-4 w-full">{description}</p>
+				<div className="w-full h-24">
+					<p className="text-gray-600 text-sm mb-4 w-full">{description}</p>
+				</div>
 
 				{/* Preço */}
 				<p className="text-gray-900 text-3xl font-bold mb-4">
@@ -174,5 +162,3 @@ export const Card: React.FC<ProductCardProps> = ({
 		</div>
 	);
 };
-
-export { IsActive };

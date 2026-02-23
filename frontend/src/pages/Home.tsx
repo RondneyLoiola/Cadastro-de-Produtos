@@ -12,14 +12,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../components/Button";
-import { IsActive } from "../components/Card";
 import { Input } from "../components/Input";
 import { api } from "../services/api";
-
-enum isActive {
-	ATIVO = "Ativo",
-	INATIVO = "Inativo",
-}
 
 interface Category {
 	id: number;
@@ -33,7 +27,7 @@ interface Product {
 	description: string;
 	quantity: number;
 	category: Category;
-	isActive: isActive;
+	isActive: boolean;
 	imageUrl: string;
 }
 
@@ -282,9 +276,8 @@ export const Home = () => {
 								</label>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
-										className="sr-only peer"
 										type="checkbox"
-										value={IsActive.ATIVO}
+										className="sr-only peer"
 										{...register("isActive")}
 									/>
 									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>

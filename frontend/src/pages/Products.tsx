@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
-import { Card, IsActive } from "../components/Card";
+import { Card } from "../components/Card";
 import { api } from "../services/api";
 
 interface Category {
-	id: number;
+	id: string;
 	name: string;
 }
+
 interface Product {
 	id: string;
 	name: string;
@@ -14,13 +15,21 @@ interface Product {
 	description: string;
 	quantity: number;
 	category: Category;
-	isActive: IsActive;
+	isActive: boolean;
 	image: string;
 }
 
 export const Products = () => {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
+	
+	// Estados para os filtros
+	const [searchName, setSearchName] = useState("");
+	const [selectedCategory, setSelectedCategory] = useState("");
+	const [selectedStatus, setSelectedStatus] = useState("");
+	
+	// Estado para produtos filtrados
+	const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
 	useEffect(() => {
 		const getCategories = async () => {
@@ -37,6 +46,7 @@ export const Products = () => {
 				const { data } = await api.get("/products");
 				console.log(data);
 				setProducts(data);
+				setFilteredProducts(data); // Inicializa com todos os produtos
 			} catch (error) {
 				console.log(error);
 			}
@@ -45,6 +55,41 @@ export const Products = () => {
 		getCategories();
 		getProducts();
 	}, []);
+
+	// Função para aplicar os filtros
+	const handleFilter = () => {
+		let filtered = [...products];
+
+		// Filtro por nome
+		if (searchName.trim() !== "") {
+			filtered = filtered.filter((product) =>
+				product.name.toLowerCase().includes(searchName.toLowerCase())
+			);
+		}
+
+		// Filtro por categoria
+		if (selectedCategory !== "") {
+			filtered = filtered.filter(
+				(product) => product.category.id === selectedCategory
+			);
+		}
+
+		// Filtro por status
+		if (selectedStatus !== "") {
+			const isActive = selectedStatus === "true";
+			filtered = filtered.filter((product) => product.isActive === isActive);
+		}
+
+		setFilteredProducts(filtered);
+	};
+
+	// Função para limpar os filtros
+	const handleClearFilters = () => {
+		setSearchName("");
+		setSelectedCategory("");
+		setSelectedStatus("");
+		setFilteredProducts(products);
+	};
 
 	return (
 		<section className="container py-6 flex flex-col gap-4">
@@ -63,12 +108,17 @@ export const Products = () => {
 							<input
 								placeholder="Pesquise pelo nome do produto"
 								type="text"
+								value={searchName}
+								onChange={(e) => setSearchName(e.target.value)}
+								onKeyDown={(e) => e.key === "Enter" && handleFilter()}
 								className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							/>
 						</div>
 
 						<select
 							name="categories"
+							value={selectedCategory}
+							onChange={(e) => setSelectedCategory(e.target.value)}
 							className="text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						>
 							<option value="">Todas Categorias</option>
@@ -81,31 +131,55 @@ export const Products = () => {
 
 						<select
 							name="status"
+							value={selectedStatus}
+							onChange={(e) => setSelectedStatus(e.target.value)}
 							className="text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						>
 							<option value="">Status</option>
-							<option value={IsActive.ATIVO}>{IsActive.ATIVO}</option>
-							<option value={IsActive.INATIVO}>{IsActive.INATIVO}</option>
+							<option value="true">Ativo</option>
+							<option value="false">Inativo</option>
 						</select>
 
-						<Button variant="primary">Pesquisar</Button>
+						<Button variant="primary" onClick={handleFilter}>
+							Pesquisar
+						</Button>
+						
+						<Button variant="secondary" onClick={handleClearFilters}>
+							Limpar
+						</Button>
 					</div>
 				</div>
 			</div>
 
-			<div className="flex mt-4">
-				{products.map((product) => (
-					<Card
-						key={product.id}
-						name={product.name}
-						description={product.description}
-						price={product.price}
-						category={product.category.name}
-						quantity={product.quantity}
-						imageUrl={product.image}
-						isActive={product.isActive}
-					/>
-				))}
+			{/* Exibição de resultados */}
+			<div className="mt-2">
+				<p className="text-gray-600">
+					Exibindo {filteredProducts.length} de {products.length} produtos
+				</p>
+			</div>
+
+			{/* Lista de produtos */}
+			<div className="flex flex-wrap gap-4 mt-4">
+				{filteredProducts.length > 0 ? (
+					filteredProducts.map((product) => (
+						<Card
+							key={product.id}
+							name={product.name}
+							description={product.description}
+							price={product.price}
+							category={product.category.name}
+							quantity={product.quantity}
+							imageUrl={product.image}
+							isActive={product.isActive}
+						/>
+					))
+				) : (
+					<div className="w-full text-center py-12">
+						<p className="text-gray-500 text-lg">
+							Nenhum produto encontrado com os filtros selecionados
+						</p>
+					</div>
+				)}
 			</div>
 		</section>
 	);
