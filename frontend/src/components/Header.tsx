@@ -6,7 +6,14 @@ export const Header = () => {
 	return (
 		<header className="fixed w-full p-4 bg-white border-b border-blue-100">
 			<div className="flex items-center justify-between">
-				<h2>ERP NEXUS</h2>
+				<h2 className="flex items-center gap-2 font-bold cursor-pointer">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="30" height="30">
+						<rect x="10" y="60" width="30" height="30" fill="#2196F3"/>
+						<rect x="40" y="30" width="30" height="60" fill="#2196F3"/>
+						<rect x="70" y="10" width="30" height="80" fill="#2196F3"/>
+					</svg>
+					ERP NEXUS
+				</h2>
 
 				<div className="flex items-center justify-center gap-4">
 					<ul
