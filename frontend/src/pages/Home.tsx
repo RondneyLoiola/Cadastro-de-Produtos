@@ -15,10 +15,10 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { api } from "../services/api";
 
-enum isActive  {
+enum isActive {
 	ATIVO = "Ativo",
 	INATIVO = "Inativo",
-} 
+}
 
 interface Category {
 	id: number;
@@ -38,7 +38,7 @@ interface Product {
 
 export const Home = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [products, setProducts] = useState<Product[]>([]);
+	const [_products, setProducts] = useState<Product[]>([]);
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
@@ -64,14 +64,14 @@ export const Home = () => {
 	};
 
 	const getProducts = async () => {
-			try {
-				const { data } = await api.get("/products");
-				console.log(data)
-				setProducts(data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
+		try {
+			const { data } = await api.get("/products");
+			console.log(data);
+			setProducts(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	useEffect(() => {
 		getCategories();
