@@ -6,14 +6,14 @@ import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import type { CreateSessionBody } from "../../types/types";
 
 dotenv.config();
 
 const secret_key = process.env.JWT_SECRET_KEY;
-const _expires_in = process.env.JWT_EXPIRES_IN;
 
 class SessionController {
-	async store(req: Request, res: Response) {
+	async store(req: Request<{ Body: CreateSessionBody }>, res: Response) {
 		try {
 			const schema = z.object({
 				email: z.email(),
@@ -59,7 +59,7 @@ class SessionController {
 				},
 				String(secret_key),
 				{
-					expiresIn: "1d",
+					expiresIn: "7d",
 				},
 			);
 

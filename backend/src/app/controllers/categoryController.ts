@@ -1,18 +1,19 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import type { CreateCategoryBody } from "../../types/types";
 import { buildValidationErrorMessage } from "../../utils/validatorErrors";
 
 class CategoryController {
-	async store(req: Request, res: Response) {
+	async store(req: Request<{ Body: CreateCategoryBody }>, res: Response) {
 		try {
 			const schema = z.object({
-				name: z.string('Nome da categoria é obrigatorio'),
+				name: z.string("Nome da categoria é obrigatorio"),
 			});
 
 			const category = schema.safeParse(req.body);
 
-			if(!category.success){
+			if (!category.success) {
 				const errors = buildValidationErrorMessage(category.error.issues);
 
 				return res.status(422).json({

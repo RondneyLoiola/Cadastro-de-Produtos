@@ -28,7 +28,7 @@ interface Product {
 	quantity: number;
 	category: Category;
 	isActive: boolean;
-	imageUrl: string;
+	image: string;
 }
 
 export const Home = () => {
@@ -57,15 +57,26 @@ export const Home = () => {
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
 		description: z.string().min(1, "Coloque a descrição do produto"),
-		price: z.coerce
-			.number()
-			.positive("Preço do produto precisa ser maior que zero"),
-		quantity: z.coerce
-			.number()
-			.positive("Quantidade precisa ser maior que zero"),
+		price: z.number().positive("Preço do produto precisa ser maior que zero"),
+		quantity: z.number().positive("Quantidade precisa ser maior que zero"),
 		category: z.string().min(1, "Categoria é obrigatória"),
-		isActive: z.boolean().default(true),
+		isActive: z.boolean(),
+		image: z.instanceof(FileList)
+			.refine((files) => files && files.length > 0, {
+				message: 'Escolha um arquivo para continuar'
+			})
+			.refine((files) => files[0].size >= 30000, {
+				message: 'Carregue arquivos até 3mb'
+			})
+			.refine((files) => {
+				const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+				return validTypes.includes(files[0].type);
+			}, {
+				message: 'Carregue apenas imagens PNG, JPEG ou JPG'
+			})
 	});
+
+	type FormData = z.infer<typeof schema>;
 
 	const getCategories = async () => {
 		try {
@@ -94,21 +105,30 @@ export const Home = () => {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<z.input<typeof schema>>({
+	} = useForm<FormData>({
 		resolver: zodResolver(schema),
+		defaultValues: {
+			isActive: true,
+		},
 	});
 
-	const newProduct = async () => {
+	const onSubmit = async (data: FormData) => {
+		console.log('clicou')
+
 		try {
-			const { data } = await api.post("/products");
-			setProducts(data);
-			console.log(data);
+			const productFormData = new FormData();
+            productFormData.append('name', data.name);
+			productFormData.append('price', data.price.toString());
+			productFormData.append('category', String(data.category));
+			productFormData.append('description', data.description);
+			productFormData.append('quantity', String(data.quantity));
+			productFormData.append('image', data.image[0]);
+
+			await api.post('/products', productFormData);
 		} catch (error) {
 			console.log(error);
 		}
-
-		console.log("Produto cadastrado com sucesso!");
-	};
+	}
 
 	return (
 		<section className="container py-6">
@@ -121,7 +141,6 @@ export const Home = () => {
 				</div>
 
 				<form
-					onSubmit={handleSubmit(newProduct)}
 					className="flex items-start gap-4 mt-6 w-8xl"
 				>
 					{/* Lado Esquerdo */}
@@ -170,7 +189,7 @@ export const Home = () => {
 										placeholder="R$ 0,00"
 										label="Preço do produto"
 										type="number"
-										{...register("price")}
+										{...register("price", { valueAsNumber: true })}
 									/>
 									<p className="text-red-500">{errors ? errors.price?.message : ""}</p>
 								</div>
@@ -180,7 +199,7 @@ export const Home = () => {
 										placeholder="0"
 										label="Quantidade em estoque"
 										type="number"
-										{...register("quantity")}
+										{...register("quantity", { valueAsNumber: true })}
 									/>
 									<p className="text-red-500">{errors ? errors.quantity?.message : ""}</p>
 								</div>
@@ -208,7 +227,7 @@ export const Home = () => {
 						<div className="flex flex-col gap-4 bg-white px-6 py-4 border border-blue-100 rounded-xl">
 							<h2 className="text-2xl font-bold">Imagem do Produto</h2>
 							{imagePreview ? (
-								<div className="relative w-full h-56 rounded-xl overflow-hidden border border-blue-100">
+								<div className="relative w-full h-64 rounded-xl overflow-hidden border border-blue-100">
 									<img
 										src={imagePreview}
 										alt="Preview"
@@ -287,6 +306,7 @@ export const Home = () => {
 
 						<div className="flex flex-col gap-2 mt-auto">
 							<Button
+								onClick={handleSubmit(onSubmit)}
 								type="submit"
 								className="flex items-center justify-center gap-2"
 							>

@@ -2,10 +2,11 @@ import bcrypt from "bcrypt";
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import type { CreateUserBody } from "../../types/types";
 import { buildValidationErrorMessage } from "../../utils/validatorErrors";
 
 class UserController {
-	async store(req: Request, res: Response) {
+	async store(req: Request<{ Body: CreateUserBody }>, res: Response) {
 		try {
 			const schema = z.object({
 				name: z.string().min(1, "Nome é necessário"),

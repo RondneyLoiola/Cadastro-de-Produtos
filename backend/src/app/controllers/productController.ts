@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import prisma from "../../config/prisma";
+import type { CreateProductBody } from "../../types/types";
 import { buildValidationErrorMessage } from "../../utils/validatorErrors";
 
 class ProductController {
-	async store(req: Request, res: Response) {
+	async store(req: Request<{ Body: CreateProductBody }>, res: Response) {
 		try {
 			const schema = z.object({
 				name: z.string("Nome é obrigatoria"),
@@ -27,7 +28,8 @@ class ProductController {
 				});
 			}
 
-			const { name, price, description, quantity, categoryId, isActive } = product.data;
+			const { name, price, description, quantity, categoryId, isActive } =
+				product.data;
 			const image = req.file?.filename;
 
 			const newProduct = await prisma.product.create({
@@ -118,7 +120,8 @@ class ProductController {
 
 	async edit(req: Request, res: Response) {
 		try {
-			const { name, price, description, quantity, categoryId, isActive } = req.body;
+			const { name, price, description, quantity, categoryId, isActive } =
+				req.body;
 
 			const editProduct = await prisma.product.update({
 				where: {
@@ -130,7 +133,7 @@ class ProductController {
 					description,
 					quantity,
 					categoryId,
-					isActive
+					isActive,
 				},
 				include: {
 					category: true,
