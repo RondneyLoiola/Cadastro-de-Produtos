@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
+import { useUser } from "../hook/auth";
 import { api } from "../services/api";
 
 interface Category {
@@ -32,10 +33,12 @@ interface Product {
 }
 
 export const Home = () => {
+	const { userInfo } = useUser();
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [_products, setProducts] = useState<Product[]>([]);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [_selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -57,20 +60,21 @@ export const Home = () => {
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
 		description: z.string().min(1, "Coloque a descrição do produto"),
-		price: z.number().positive("Preço do produto precisa ser maior que zero"),
-		quantity: z.number().positive("Quantidade precisa ser maior que zero"),
-		category: z.string().min(1, "Categoria é obrigatória"),
+		price: z.number({ message: 'Coloque o preço do produto' }).positive("Preço do produto precisa ser maior que zero"),
+		quantity: z.number({ message: 'Coloque a quantidade do produto' }).positive("Quantidade precisa ser maior que zero"),
+		category: z.string().min(1, "Selecione a categoria do produto"),
 		isActive: z.boolean(),
-		image: z.instanceof(FileList)
-			.refine((files) => files && files.length > 0, {
+		image: z
+			.custom<FileList>()
+			.refine((files) => files?.length > 0, {
 				message: 'Escolha um arquivo para continuar'
 			})
-			.refine((files) => files[0].size >= 30000, {
+			.refine((files) => files?.[0]?.size <= 3000000, {
 				message: 'Carregue arquivos até 3mb'
 			})
 			.refine((files) => {
 				const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-				return validTypes.includes(files[0].type);
+				return files?.[0] ? validTypes.includes(files[0].type) : false;
 			}, {
 				message: 'Carregue apenas imagens PNG, JPEG ou JPG'
 			})
@@ -84,6 +88,7 @@ export const Home = () => {
 			setCategories(data);
 		} catch (error) {
 			console.log(error);
+			setMensagem({ texto: "Erro ao carregar categorias", tipo: 'erro' });
 		}
 	};
 
@@ -97,13 +102,18 @@ export const Home = () => {
 	};
 
 	useEffect(() => {
+		// Verificar se o usuário é admin
+		if (userInfo && !userInfo.isAdmin) {
+			setMensagem({ texto: 'Acesso negado: Apenas administradores podem acessar esta página', tipo: 'erro' });
+		}
 		getCategories();
 		getProducts();
-	}, []);
+	}, [userInfo]);
 
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm<FormData>({
 		resolver: zodResolver(schema),
@@ -113,25 +123,73 @@ export const Home = () => {
 	});
 
 	const onSubmit = async (data: FormData) => {
-		console.log('clicou')
-
 		try {
 			const productFormData = new FormData();
-            productFormData.append('name', data.name);
+			productFormData.append('name', data.name);
 			productFormData.append('price', data.price.toString());
-			productFormData.append('category', String(data.category));
+			productFormData.append('categoryId', String(data.category));
 			productFormData.append('description', data.description);
 			productFormData.append('quantity', String(data.quantity));
+			productFormData.append('isActive', String(data.isActive));
 			productFormData.append('image', data.image[0]);
 
-			await api.post('/products', productFormData);
-		} catch (error) {
-			console.log(error);
+			const response = await api.post('/products', productFormData);
+
+			if (response.status === 201) {
+				setMensagem({ texto: 'Produto cadastrado com sucesso!', tipo: 'sucesso' });
+				
+				// Limpar o formulário
+				reset();
+				setImagePreview(null);
+				setSelectedFile(null);
+				
+				// Recarregar a lista de produtos
+				getProducts();
+				
+				// Esconder mensagem após 3 segundos
+				setTimeout(() => {
+					setMensagem(null);
+				}, 3000);
+			}
+		} catch (error: any) {
+			console.error('Erro ao criar produto:', error);
+			
+			if (error.response?.status === 401) {
+				setMensagem({ texto: 'Não autorizado: Faça login como administrador', tipo: 'erro' });
+			} else if (error.response?.status === 403) {
+				setMensagem({ texto: 'Acesso negado: Apenas administradores podem criar produtos', tipo: 'erro' });
+			} else if (error.response?.status === 422) {
+				const errorMessage = error.response.data.message || 'Erro de validação';
+				setMensagem({ texto: `Erro de validação: ${errorMessage}`, tipo: 'erro' });
+			} else {
+				setMensagem({ texto: 'Erro ao criar produto. Tente novamente.', tipo: 'erro' });
+			}
 		}
-	}
+	};
 
 	return (
-		<section className="container py-6">
+		<section className="container py-6 relative">
+			{/* Mensagem Toast */}
+			{mensagem && (
+				<div
+					className={`fixed top-4 right-4 left-4 md:left-auto md:w-96 p-4 rounded-lg shadow-lg animate-slide-in z-50 ${
+						mensagem.tipo === 'sucesso'
+							? 'bg-green-100 border border-green-400 text-green-700'
+							: 'bg-red-100 border border-red-400 text-red-700'
+					}`}
+				>
+					<div className="flex items-center justify-between">
+						<p className="font-medium">{mensagem.texto}</p>
+						<button
+							onClick={() => setMensagem(null)}
+							className="ml-4 text-xl font-bold hover:opacity-70"
+						>
+							×
+						</button>
+					</div>
+				</div>
+			)}
+
 			<div className="w-full">
 				<div className="flex flex-col gap-2">
 					<h1 className="md:text-4xl font-extrabold">Cadastrar Produto</h1>
@@ -141,6 +199,7 @@ export const Home = () => {
 				</div>
 
 				<form
+					onSubmit={handleSubmit(onSubmit)}
 					className="flex items-start gap-4 mt-6 w-8xl"
 				>
 					{/* Lado Esquerdo */}
@@ -158,7 +217,7 @@ export const Home = () => {
 									type="text"
 									{...register("name")}
 								/>
-								<p className="text-red-500">{errors ? errors.name?.message : ""}</p>
+								<p className="text-red-500">{errors.name?.message}</p>
 							</div>
 
 							<div className="flex flex-col">
@@ -179,7 +238,7 @@ export const Home = () => {
 										</option>
 									))}
 								</select>
-								<p className="text-red-500">{errors ? errors.category?.message : ""}</p>
+								<p className="text-red-500">{errors.category?.message}</p>
 							</div>
 
 							<div className="w-full flex items-center justify-between gap-4">
@@ -191,7 +250,7 @@ export const Home = () => {
 										type="number"
 										{...register("price", { valueAsNumber: true })}
 									/>
-									<p className="text-red-500">{errors ? errors.price?.message : ""}</p>
+									<p className="text-red-500">{errors.price?.message}</p>
 								</div>
 								<div className="w-1/2">
 									<Input
@@ -201,7 +260,7 @@ export const Home = () => {
 										type="number"
 										{...register("quantity", { valueAsNumber: true })}
 									/>
-									<p className="text-red-500">{errors ? errors.quantity?.message : ""}</p>
+									<p className="text-red-500">{errors.quantity?.message}</p>
 								</div>
 							</div>
 
@@ -216,8 +275,8 @@ export const Home = () => {
 									placeholder="Insira as especificações técnicas detalhadas do produto"
 									className={`${errors.description ? "border-red-500" : ""} w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
 									{...register("description")}
-								></textarea>
-								<p className="text-red-500">{errors ? errors.description?.message : ""}</p>
+								/>
+								<p className="text-red-500 relative bottom-2">{errors.description?.message}</p>
 							</div>
 						</div>
 					</div>
@@ -256,7 +315,7 @@ export const Home = () => {
 									</button>
 								</div>
 							) : (
-								<label className="flex flex-col items-center justify-center w-full h-56 bg-gray-200 rounded-xl border border-blue-100 cursor-pointer hover:bg-gray-300 transition-colors">
+								<label className={`${errors.image ? "border-red-500 bg-red-200" : ""} flex flex-col items-center justify-center w-full h-56 bg-gray-200 rounded-xl border border-blue-100 cursor-pointer hover:bg-gray-300 transition-colors`}>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										width="40"
@@ -274,13 +333,14 @@ export const Home = () => {
 										<circle cx="8.5" cy="8.5" r="1.5" />
 										<polyline points="21 15 16 10 5 21" />
 									</svg>
-									<span className="text-gray-500 text-sm">
+									<span className={`${errors.image ? "text-red-500" : ""} text-gray-500 text-sm`}>
 										Clique para selecionar uma imagem
 									</span>
 									<input
 										type="file"
 										className="hidden"
 										accept="image/*"
+										{...register("image")}
 										onChange={handleImageChange}
 									/>
 								</label>
@@ -299,20 +359,27 @@ export const Home = () => {
 										className="sr-only peer"
 										{...register("isActive")}
 									/>
-									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500" />
 								</label>
 							</div>
 						</div>
 
 						<div className="flex flex-col gap-2 mt-auto">
 							<Button
-								onClick={handleSubmit(onSubmit)}
 								type="submit"
 								className="flex items-center justify-center gap-2"
 							>
 								<Save /> Salvar Produto
 							</Button>
-							<Button type="button" variant="secondary">
+							<Button 
+								type="button" 
+								variant="secondary"
+								onClick={() => {
+									reset();
+									setImagePreview(null);
+									setSelectedFile(null);
+								}}
+							>
 								Cancelar
 							</Button>
 						</div>

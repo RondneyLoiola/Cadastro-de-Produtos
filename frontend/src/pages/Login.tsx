@@ -40,10 +40,22 @@ export const Login = () => {
 
 	const onSubmit = async (data: UserType) => {
 		try {
-			const { data: userData } = await api.post("/session", {
+			const { data: response } = await api.post("/session", {
 				email: data.email,
 				password: data.password,
 			});
+
+			// Adaptar o formato da resposta do backend para o formato esperado pelo frontend
+			const userData = {
+				id: response.user.id,
+				name: response.user.name,
+				isAdmin: response.user.isAdmin,
+				token: response.token,
+				user: {
+					name: response.user.name,
+					email: response.user.email,
+				},
+			};
 
 			putUserData(userData);
 			setMensagem({

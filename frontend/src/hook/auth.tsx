@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 export type UserData = {
     id: string;
     name: string;
+    isAdmin: boolean;
     token: string;
     user: {
         name: string;
@@ -21,7 +22,7 @@ type UserContextType = {
     logout: () => void;
 }
 
-export const userLocalStorageKey = `erp_nexus:userData`;
+export const userLocalStorageKey = `${import.meta.env.VITE_LOCALSTORAGE_KEY}:userData`;
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
