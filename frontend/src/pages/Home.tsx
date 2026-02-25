@@ -37,25 +37,7 @@ export const Home = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [_products, setProducts] = useState<Product[]>([]);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
-	const [_selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
-
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setSelectedFile(file);
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setImagePreview(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-		}
-	};
-
-	const handleRemoveImage = () => {
-		setImagePreview(null);
-		setSelectedFile(null);
-	};
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
@@ -81,6 +63,19 @@ export const Home = () => {
 	});
 
 	type FormData = z.infer<typeof schema>;
+
+	const {
+		register,
+		handleSubmit,
+		reset,
+		setValue,
+		formState: { errors },
+	} = useForm<FormData>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			isActive: true,
+		},
+	});
 
 	const getCategories = async () => {
 		try {
@@ -110,19 +105,33 @@ export const Home = () => {
 		getProducts();
 	}, [userInfo]);
 
-	const {
-		register,
-		handleSubmit,
-		reset,
-		formState: { errors },
-	} = useForm<FormData>({
-		resolver: zodResolver(schema),
-		defaultValues: {
-			isActive: true,
-		},
-	});
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			// Apenas para preview visual
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImagePreview(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const handleRemoveImage = () => {
+		setImagePreview(null);
+		setValue('image', undefined as any);
+	};
 
 	const onSubmit = async (data: FormData) => {
+		console.log('=== DEBUG: Dados do formulário ===');
+		console.log('Nome:', data.name);
+		console.log('Preço:', data.price);
+		console.log('Categoria:', data.category);
+		console.log('Descrição:', data.description);
+		console.log('Quantidade:', data.quantity);
+		console.log('Ativo:', data.isActive);
+		console.log('Arquivo:', data.image[0]);
+
 		try {
 			const productFormData = new FormData();
 			productFormData.append('name', data.name);
@@ -133,7 +142,12 @@ export const Home = () => {
 			productFormData.append('isActive', String(data.isActive));
 			productFormData.append('image', data.image[0]);
 
-			const response = await api.post('/products', productFormData);
+			const response = await api.post('/products', productFormData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			});
+
 
 			if (response.status === 201) {
 				setMensagem({ texto: 'Produto cadastrado com sucesso!', tipo: 'sucesso' });
@@ -141,7 +155,6 @@ export const Home = () => {
 				// Limpar o formulário
 				reset();
 				setImagePreview(null);
-				setSelectedFile(null);
 				
 				// Recarregar a lista de produtos
 				getProducts();
@@ -152,7 +165,8 @@ export const Home = () => {
 				}, 3000);
 			}
 		} catch (error: any) {
-			console.error('Erro ao criar produto:', error);
+			console.error('=== ERRO ao criar produto ===', error);
+			console.error('Resposta do erro:', error.response?.data);
 			
 			if (error.response?.status === 401) {
 				setMensagem({ texto: 'Não autorizado: Faça login como administrador', tipo: 'erro' });
@@ -162,7 +176,8 @@ export const Home = () => {
 				const errorMessage = error.response.data.message || 'Erro de validação';
 				setMensagem({ texto: `Erro de validação: ${errorMessage}`, tipo: 'erro' });
 			} else {
-				setMensagem({ texto: 'Erro ao criar produto. Tente novamente.', tipo: 'erro' });
+				const errorMsg = error.response?.data?.message || error.message || 'Erro ao criar produto. Tente novamente.';
+				setMensagem({ texto: errorMsg, tipo: 'erro' });
 			}
 		}
 	};
@@ -181,6 +196,7 @@ export const Home = () => {
 					<div className="flex items-center justify-between">
 						<p className="font-medium">{mensagem.texto}</p>
 						<button
+							type="button"
 							onClick={() => setMensagem(null)}
 							className="ml-4 text-xl font-bold hover:opacity-70"
 						>
@@ -217,13 +233,15 @@ export const Home = () => {
 									type="text"
 									{...register("name")}
 								/>
-								<p className="text-red-500">{errors.name?.message}</p>
+								{errors.name && (
+									<p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+								)}
 							</div>
 
 							<div className="flex flex-col">
 								<label
 									htmlFor="category"
-									className="block font-bold text-gray-700"
+									className="block font-bold text-gray-700 mb-1"
 								>
 									Categoria
 								</label>
@@ -238,10 +256,12 @@ export const Home = () => {
 										</option>
 									))}
 								</select>
-								<p className="text-red-500">{errors.category?.message}</p>
+								{errors.category && (
+									<p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+								)}
 							</div>
 
-							<div className="w-full flex items-center justify-between gap-4">
+							<div className="w-full flex items-start justify-between gap-4">
 								<div className="w-1/2">
 									<Input
 										className={errors.price ? "border-red-500" : ""}
@@ -250,7 +270,9 @@ export const Home = () => {
 										type="number"
 										{...register("price", { valueAsNumber: true })}
 									/>
-									<p className="text-red-500">{errors.price?.message}</p>
+									{errors.price && (
+										<p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
+									)}
 								</div>
 								<div className="w-1/2">
 									<Input
@@ -260,7 +282,9 @@ export const Home = () => {
 										type="number"
 										{...register("quantity", { valueAsNumber: true })}
 									/>
-									<p className="text-red-500">{errors.quantity?.message}</p>
+									{errors.quantity && (
+										<p className="text-red-500 text-sm mt-1">{errors.quantity.message}</p>
+									)}
 								</div>
 							</div>
 
@@ -276,7 +300,9 @@ export const Home = () => {
 									className={`${errors.description ? "border-red-500" : ""} w-full h-32 text-gray-900 bg-white border border-gray-300 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
 									{...register("description")}
 								/>
-								<p className="text-red-500 relative bottom-2">{errors.description?.message}</p>
+								{errors.description && (
+									<p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+								)}
 							</div>
 						</div>
 					</div>
@@ -315,7 +341,7 @@ export const Home = () => {
 									</button>
 								</div>
 							) : (
-								<label className={`${errors.image ? "border-red-500 bg-red-200" : ""} flex flex-col items-center justify-center w-full h-56 bg-gray-200 rounded-xl border border-blue-100 cursor-pointer hover:bg-gray-300 transition-colors`}>
+								<label className={`${errors.image ? "border-red-500 bg-red-50" : "bg-gray-50"} flex flex-col items-center justify-center w-full h-56 rounded-xl border-2 border-dashed ${errors.image ? "border-red-500" : "border-gray-300"} cursor-pointer hover:bg-gray-100 transition-colors`}>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										width="40"
@@ -326,31 +352,38 @@ export const Home = () => {
 										strokeWidth="2"
 										strokeLinecap="round"
 										strokeLinejoin="round"
-										className="text-gray-500 mb-2"
+										className={`${errors.image ? "text-red-400" : "text-gray-400"} mb-2`}
 									>
 										<title>Ícone de upload de imagem</title>
 										<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
 										<circle cx="8.5" cy="8.5" r="1.5" />
 										<polyline points="21 15 16 10 5 21" />
 									</svg>
-									<span className={`${errors.image ? "text-red-500" : ""} text-gray-500 text-sm`}>
+									<span className={`${errors.image ? "text-red-500" : "text-gray-500"} text-sm font-medium`}>
 										Clique para selecionar uma imagem
+									</span>
+									<span className="text-gray-400 text-xs mt-1">
+										PNG, JPEG ou JPG (até 3MB)
 									</span>
 									<input
 										type="file"
 										className="hidden"
-										accept="image/*"
-										{...register("image")}
-										onChange={handleImageChange}
+										accept="image/png,image/jpeg,image/jpg"
+										{...register("image", {
+											onChange: handleImageChange
+										})}
 									/>
 								</label>
+							)}
+							{errors.image && (
+								<p className="text-red-500 text-sm">{errors.image.message as string}</p>
 							)}
 						</div>
 
 						<div className="flex flex-col gap-4 bg-white p-6 border border-blue-100 rounded-xl">
 							<h2 className="text-2xl font-bold">Configurações</h2>
 							<div className="flex items-center justify-between">
-								<label htmlFor="status" className="">
+								<label htmlFor="isActive" className="font-medium text-gray-700">
 									Produto Ativo
 								</label>
 								<label className="relative inline-flex items-center cursor-pointer">
@@ -359,7 +392,7 @@ export const Home = () => {
 										className="sr-only peer"
 										{...register("isActive")}
 									/>
-									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500" />
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500" />
 								</label>
 							</div>
 						</div>
@@ -369,7 +402,7 @@ export const Home = () => {
 								type="submit"
 								className="flex items-center justify-center gap-2"
 							>
-								<Save /> Salvar Produto
+								<Save size={20} /> Salvar Produto
 							</Button>
 							<Button 
 								type="button" 
@@ -377,7 +410,6 @@ export const Home = () => {
 								onClick={() => {
 									reset();
 									setImagePreview(null);
-									setSelectedFile(null);
 								}}
 							>
 								Cancelar

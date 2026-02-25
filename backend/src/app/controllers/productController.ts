@@ -14,7 +14,7 @@ class ProductController {
 				quantity: z.coerce
 					.number("Quantidade é obrigatoria")
 					.positive("Quantidade precisa ser maior que zero"),
-				isActive: z.boolean().default(true),
+				isActive: z.coerce.boolean().default(true),
 				categoryId: z.string("Categória é obrigatoria"),
 			});
 
