@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AppLayout } from "../layout/AppLayout";
-import { Home } from "../pages/Home";
-import { Products } from "../pages/Products";
+import { Home } from "../pages/Admin/Home";
+import { Products } from "../pages/Admin/Products";
 import { Register } from "../pages/Register";
 import { Login } from "../pages/Login";
 import UserProvider from "../hook/auth";

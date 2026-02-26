@@ -8,10 +8,10 @@ import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../components/Button";
-import { Input } from "../components/Input";
-import { useUser } from "../hook/auth";
-import { api } from "../services/api";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
+import { useUser } from "../../hook/auth";
+import { api } from "../../services/api";
 
 interface Category {
 	id: number;
