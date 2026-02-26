@@ -92,19 +92,19 @@ export const Products = () => {
 	};
 
 	return (
-		<section className="container py-6 flex flex-col gap-4">
+		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 flex flex-col gap-4">
 			{/* Pesquisas */}
 			<div className="w-full">
 				<div className="flex flex-col gap-2">
-					<h1 className="md:text-4xl font-extrabold">Listagem de Produtos</h1>
+					<h1 className="md:text-4xl text-3xl font-extrabold">Listagem de Produtos</h1>
 					<p className="text-xl text-gray-500">
 						Gerencie seu catálogo, preços e níveis de estoque em tempo real
 					</p>
 				</div>
 
-				<div className="flex p-3 bg-white mt-4 rounded-xl border border-blue-200">
-					<div className="w-full flex gap-6 items-center justify-center">
-						<div className="w-full">
+			<div className="flex p-3 bg-white mt-4 rounded-xl border border-blue-200">
+					<div className="w-full flex flex-col md:flex-row gap-3 md:gap-6 items-center justify-center">
+						<div className="w-full md:w-auto md:flex-1">
 							<input
 								placeholder="Pesquise pelo nome do produto"
 								type="text"
@@ -119,7 +119,7 @@ export const Products = () => {
 							name="categories"
 							value={selectedCategory}
 							onChange={(e) => setSelectedCategory(e.target.value)}
-							className="text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							className="w-full md:w-auto text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						>
 							<option value="">Todas Categorias</option>
 							{categories.map((category) => (
@@ -133,20 +133,22 @@ export const Products = () => {
 							name="status"
 							value={selectedStatus}
 							onChange={(e) => setSelectedStatus(e.target.value)}
-							className="text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							className="w-full md:w-auto text-gray-900 bg-gray-50 border border-gray-300 px-2 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						>
 							<option value="">Status</option>
 							<option value="true">Ativo</option>
 							<option value="false">Inativo</option>
 						</select>
 
-						<Button variant="primary" onClick={handleFilter}>
-							Pesquisar
-						</Button>
-						
-						<Button variant="secondary" onClick={handleClearFilters}>
-							Limpar
-						</Button>
+						<div className="flex w-full md:w-auto gap-2">
+							<Button variant="primary" onClick={handleFilter} className="flex-1 md:flex-none">
+								Pesquisar
+							</Button>
+							
+							<Button variant="secondary" onClick={handleClearFilters} className="flex-1 md:flex-none">
+								Limpar
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -159,7 +161,7 @@ export const Products = () => {
 			</div>
 
 			{/* Lista de produtos */}
-			<div className="flex flex-wrap gap-4 mt-4">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-4">
 				{filteredProducts.length > 0 ? (
 					filteredProducts.map((product) => (
 						<Card
@@ -174,10 +176,12 @@ export const Products = () => {
 						/>
 					))
 				) : (
-					<div className="w-full text-center py-12">
-						<p className="text-gray-500 text-lg">
-							Nenhum produto encontrado com os filtros selecionados
-						</p>
+					<div className="flex items-center justify-center py-12 col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4">
+						<div className="text-center">
+							<p className="text-gray-500 text-lg">
+								Nenhum produto encontrado com os filtros selecionados
+							</p>
+						</div>
 					</div>
 				)}
 			</div>

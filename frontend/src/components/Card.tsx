@@ -111,7 +111,7 @@ export const Card: React.FC<ProductCardProps> = ({
 	const statusBadge = getStatusBadge(isActive);
 
 	return (
-		<div className="w-80 h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+		<div className="w-full h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
 			{/* Imagem do Produto */}
 			<div className="relative bg-gray-50">
 				<img src={imageUrl} alt={name} className="w-full h-48 object-contain" />

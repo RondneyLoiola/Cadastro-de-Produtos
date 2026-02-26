@@ -1,10 +1,7 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: useEffect */
 
 //TODO: revisar backend
-//TODO: fazer footer
-//TODO: fazer zod
-//TODO: fazer página de produtos
-//TODO: fazer as funções para criar produto
+//TODO: arrumar organização dos produtos na tela produtos
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
@@ -123,15 +120,6 @@ export const Home = () => {
 	};
 
 	const onSubmit = async (data: FormData) => {
-		console.log('=== DEBUG: Dados do formulário ===');
-		console.log('Nome:', data.name);
-		console.log('Preço:', data.price);
-		console.log('Categoria:', data.category);
-		console.log('Descrição:', data.description);
-		console.log('Quantidade:', data.quantity);
-		console.log('Ativo:', data.isActive);
-		console.log('Arquivo:', data.image[0]);
-
 		try {
 			const productFormData = new FormData();
 			productFormData.append('name', data.name);
@@ -208,7 +196,7 @@ export const Home = () => {
 
 			<div className="w-full">
 				<div className="flex flex-col gap-2">
-					<h1 className="md:text-4xl font-extrabold">Cadastrar Produto</h1>
+					<h1 className="md:text-4xl text-3xl font-extrabold">Cadastrar Produto</h1>
 					<p className="text-xl text-gray-500">
 						Preencha as informações necessárias para cadastrar o produto
 					</p>
@@ -216,13 +204,13 @@ export const Home = () => {
 
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex items-start gap-4 mt-6 w-8xl"
+					className="flex flex-col md:flex-row items-start gap-4 mt-6 w-full"
 				>
 					{/* Lado Esquerdo */}
-					<div className="w-[70%] flex flex-col items-left justify-center gap-4 px-6 py-4 bg-white border border-blue-100 rounded-xl">
+					<div className="w-full md:w-[70%] flex flex-col items-left justify-center gap-4 px-4 md:px-6 py-4 bg-white border border-blue-100 rounded-xl">
 						<div className="flex flex-col gap-6">
 							<div className="pb-2 border-b border-gray-200 mb-2">
-								<h2 className="text-2xl font-bold p-2">Informações básicas</h2>
+								<h2 className="text-xl md:text-2xl font-bold p-2">Informações básicas</h2>
 							</div>
 
 							<div className="flex flex-col">
@@ -261,8 +249,8 @@ export const Home = () => {
 								)}
 							</div>
 
-							<div className="w-full flex items-start justify-between gap-4">
-								<div className="w-1/2">
+							<div className="w-full flex flex-col md:flex-row items-start justify-between gap-4">
+								<div className="w-full md:w-1/2">
 									<Input
 										className={errors.price ? "border-red-500" : ""}
 										placeholder="R$ 0,00"
@@ -274,7 +262,7 @@ export const Home = () => {
 										<p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
 									)}
 								</div>
-								<div className="w-1/2">
+								<div className="w-full md:w-1/2">
 									<Input
 										className={errors.quantity ? "border-red-500" : ""}
 										placeholder="0"
@@ -308,9 +296,9 @@ export const Home = () => {
 					</div>
 
 					{/* Lado Direito */}
-					<div className="w-[30%] max-h-full flex flex-col items-left gap-6">
-						<div className="flex flex-col gap-4 bg-white px-6 py-4 border border-blue-100 rounded-xl">
-							<h2 className="text-2xl font-bold">Imagem do Produto</h2>
+					<div className="w-full md:w-[30%] max-h-full flex flex-col items-left gap-6">
+						<div className="flex flex-col gap-4 bg-white px-4 md:px-6 py-4 border border-blue-100 rounded-xl">
+							<h2 className="text-xl md:text-2xl font-bold">Imagem do Produto</h2>
 							{imagePreview ? (
 								<div className="relative w-full h-64 rounded-xl overflow-hidden border border-blue-100">
 									<img
@@ -380,8 +368,8 @@ export const Home = () => {
 							)}
 						</div>
 
-						<div className="flex flex-col gap-4 bg-white p-6 border border-blue-100 rounded-xl">
-							<h2 className="text-2xl font-bold">Configurações</h2>
+						<div className="flex flex-col gap-4 bg-white p-4 md:p-6 border border-blue-100 rounded-xl">
+							<h2 className="text-xl md:text-2xl font-bold">Configurações</h2>
 							<div className="flex items-center justify-between">
 								<label htmlFor="isActive" className="font-medium text-gray-700">
 									Produto Ativo
