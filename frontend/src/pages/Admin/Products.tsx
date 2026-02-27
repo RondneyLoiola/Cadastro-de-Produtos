@@ -93,7 +93,7 @@ export const Products = () => {
 	};
 
 	return (
-		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 flex flex-col gap-4">
+		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 pb-10 flex flex-col gap-4">
 			{/* Pesquisas */}
 			<div className="w-full">
 				<div className="flex flex-col gap-2">

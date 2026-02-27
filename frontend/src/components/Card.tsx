@@ -111,10 +111,10 @@ export const Card: React.FC<ProductCardProps> = ({
 	const statusBadge = getStatusBadge(isActive);
 
 	return (
-		<div className="w-full h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+		<div className="w-full h-full bg-white rounded-lg border border-blue-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
 			{/* Imagem do Produto */}
 			<div className="relative bg-gray-50">
-				<img src={imageUrl} alt={name} className="w-full h-48 object-contain" />
+				<img src={imageUrl} alt={name} className="w-full h-64 object-contain" />
 
 				{/* Badge de Status - Sempre exibe com cor baseada no boolean */}
 				<div
@@ -125,14 +125,14 @@ export const Card: React.FC<ProductCardProps> = ({
 			</div>
 
 			{/* Conteúdo do Card */}
-			<div className="p-4">
+			<div className="p-4 border-t border-blue-200">
 				{/* Categoria */}
 				<p className="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">
 					{category}
 				</p>
 
 				{/* Título */}
-				<h3 className="text-gray-900 text-xl font-bold mb-2">{name}</h3>
+				<h3 className="text-gray-900 text-lg font-bold mb-2">{name}</h3>
 
 				{/* Descrição */}
 				<div className="w-full h-24">

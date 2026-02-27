@@ -93,13 +93,13 @@ export const PublicProducts = () => {
 	};
 
 	return (
-		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 flex flex-col gap-4">
+		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 pb-10 flex flex-col gap-4">
 			{/* Pesquisas */}
 			<div className="w-full">
 				<div className="flex flex-col gap-2">
 					<h1 className="md:text-4xl text-3xl font-extrabold">Listagem de Produtos</h1>
 					<p className="text-xl text-gray-500">
-						Gerencie seu catálogo, preços e níveis de estoque em tempo real
+						Veja as informações de todos os produtos cadastrados
 					</p>
 				</div>
 

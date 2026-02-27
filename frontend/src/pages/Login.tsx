@@ -82,7 +82,7 @@ export const Login = () => {
 				});
 			} else {
 				setMensagem({
-					texto: "Falha no Sistema! Tente novamente.",
+					texto: "Email ou senha incorretos. Tente novamente..",
 					tipo: "erro",
 				});
 			}
