@@ -23,6 +23,8 @@ export const Products = () => {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
 	
+	console.log('tela de produtos de admin')
+
 	// Estados para os filtros
 	const [searchName, setSearchName] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("");
@@ -44,7 +46,6 @@ export const Products = () => {
 		const getProducts = async () => {
 			try {
 				const { data } = await api.get("/products");
-				console.log(data);
 				setProducts(data);
 				setFilteredProducts(data); // Inicializa com todos os produtos
 			} catch (error) {

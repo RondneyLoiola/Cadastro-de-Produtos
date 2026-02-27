@@ -51,14 +51,14 @@ export const Header = () => {
 				{/* Menu de navegação - desktop */}
 				<div className="hidden md:flex items-center justify-center gap-4">
 					<ul
-						className={`${pathname === "/" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
+						className={`${pathname === "/admin/novo-produto" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
 					>
-						<a href="/">Novo Produto</a>
+						<a href="/admin/novo-produto">Novo Produto</a>
 					</ul>
 					<ul
-						className={`${pathname === "/produtos" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
+						className={`${pathname === "/admin/ver-produtos" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
 					>
-						<a href="/produtos">Ver Produtos</a>
+						<a href="/admin/ver-produtos">Ver Produtos</a>
 					</ul>
 				</div>
 
@@ -78,8 +78,8 @@ export const Header = () => {
 					<ul className="flex flex-col gap-4">
 						<li>
 							<a 
-								href="/" 
-								className={`block py-2 ${pathname === "/" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
+								href="/admin/novo-produto" 
+								className={`block py-2 ${pathname === "/admin/novo-produto" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
 								onClick={() => setIsMenuOpen(false)}
 							>
 								{userInfo?.isAdmin === true ? "Novo Produto" : ""}
@@ -87,8 +87,8 @@ export const Header = () => {
 						</li>
 						<li>
 							<a 
-								href="/produtos" 
-								className={`block py-2 ${pathname === "/produtos" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
+								href="/admin/ver-produtos" 
+								className={`block py-2 ${pathname === "/admin/ver-produtos" ? "font-bold text-blue-500" : "text-gray-500"} font-bold hover:text-gray-700`}
 								onClick={() => setIsMenuOpen(false)}
 							>
 								{userInfo?.isAdmin ? "Ver Produtos" : "Produtos"}

@@ -63,7 +63,11 @@ export const Login = () => {
 				tipo: "sucesso",
 			});
 			setTimeout(() => {
-				navigate("/");
+				if(userData?.isAdmin) {
+					navigate("/admin/novo-produto");
+				} else {
+					navigate("/");
+				}
 			}, 2300);
 		} catch (error: any) {
 			if (error.response?.status === 401) {

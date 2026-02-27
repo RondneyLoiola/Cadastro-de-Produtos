@@ -1,11 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import { AppLayout } from "../layout/AppLayout";
+import { UserLayout } from "../layout/UserLayout";
 import { Home } from "../pages/Admin/Home";
 import { Products } from "../pages/Admin/Products";
 import { Register } from "../pages/Register";
 import { Login } from "../pages/Login";
 import UserProvider from "../hook/auth";
 import PrivateRoutes from "./PrivateRoutes";
+import { AdminLayout } from "../layout/AdminLayout";
+import { PublicProducts } from "../pages/PublicProducts";
 
 export const AppRoutes = () => {
 	return (
@@ -13,9 +15,12 @@ export const AppRoutes = () => {
 			<BrowserRouter>
 				<Routes>
 					<Route element={<PrivateRoutes />}>
-						<Route element={<AppLayout />}>
-							<Route path="/" element={<Home />} />
-							<Route path="/produtos" element={<Products />} />
+						<Route element={<UserLayout />}>
+							<Route path="/" element={<PublicProducts />} />
+						</Route>
+						<Route path="/admin" element={<AdminLayout/>}>
+							<Route path="/admin/novo-produto" element={<Home />} />
+							<Route path="/admin/ver-produtos" element={<Products />} />
 						</Route>
 					</Route>
 					<Route path="/cadastro" element={<Register />} />

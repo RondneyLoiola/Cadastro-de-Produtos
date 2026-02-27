@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: useEffect */
 
 //TODO: revisar backend
-//TODO: arrumar organização dos produtos na tela produtos
+//TODO: ajeitar layout public
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
@@ -35,6 +35,8 @@ export const Home = () => {
 	const [_products, setProducts] = useState<Product[]>([]);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
+
+	console.log('tela home de admin')
 
 	const schema = z.object({
 		name: z.string().min(1, "Coloque o nome do produto"),
