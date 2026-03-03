@@ -123,8 +123,38 @@ class ProductController {
 
 	async edit(req: Request, res: Response) {
 		try {
+			const schema = z.object({
+				name: z.string().min(1, "Nome é obrigatório"),
+				price: z.coerce.number().positive("Preço precisa ser maior que zero"),
+				description: z.string().min(1, "Descrição é obrigatória"),
+				quantity: z.coerce.number().positive("Quantidade precisa ser maior que zero"),
+				categoryId: z.string("Categoria é obrigatória"),
+				isActive: z.coerce.boolean(),
+			});
+
+			const productData = schema.safeParse(req.body);
+
+			if (!productData.success) {
+				const errors = buildValidationErrorMessage(productData.error.issues);
+				return res.status(422).json({ message: errors });
+			}
+
 			const { name, price, description, quantity, categoryId, isActive } =
-				req.body;
+				productData.data;
+
+			// Verificar se o produto existe
+			const existingProduct = await prisma.product.findUnique({
+				where: {
+					id: String(req.params.productId),
+				},
+			});
+
+			if (!existingProduct) {
+				return res.status(404).json({ error: "Produto não encontrado" });
+			}
+
+			// Se houver nova imagem, usa ela; caso contrário, mantém a imagem atual
+			const image = req.file?.filename ?? existingProduct.image;
 
 			const editProduct = await prisma.product.update({
 				where: {
@@ -137,19 +167,24 @@ class ProductController {
 					quantity,
 					categoryId,
 					isActive,
+					image,
 				},
 				include: {
 					category: true,
 				},
 			});
 
-			if (!editProduct) {
-				return res.status(400).json({ error: "Produto não encontrado" });
-			}
+			// Retornar com URL da imagem
+			const productWithImageUrl = {
+				...editProduct,
+				image: editProduct.image
+					? `http://localhost:3001/product-file/${editProduct.image}`
+					: null,
+			};
 
 			return res
 				.status(200)
-				.json({ message: "Produto editado com sucesso", editProduct });
+				.json({ message: "Produto editado com sucesso", editProduct: productWithImageUrl });
 		} catch (error) {
 			console.error(error);
 			return res.status(400).json({ error: "Erro ao editar produto" });

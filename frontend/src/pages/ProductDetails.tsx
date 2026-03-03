@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router";
 import { api } from "../services/api";
 import { PriceConverter } from "../utils/priceConverter";
 import { Button } from "../components/Button";
-import { ArrowLeft, Package, Tag, Scale } from "lucide-react";
+import { useUser } from "../hook/auth";
+import { ArrowLeft, Package, Tag, Scale, Pencil } from "lucide-react";
 
 interface Category {
 	id: string;
@@ -108,6 +109,7 @@ const getStatusBadge = (isActive: boolean): StatusBadge => {
 export const ProductDetails = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
+	const { userInfo } = useUser();
 	const [product, setProduct] = useState<Product | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -158,14 +160,27 @@ export const ProductDetails = () => {
 
 	return (
 		<section className="max-w-7xl px-2 md:px-4 mx-auto py-6 pb-10">
-			{/* Botão Voltar */}
-			<button
-				onClick={() => navigate("/")}
-				className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-6 transition-colors"
-			>
-				<ArrowLeft size={20} />
-				<span className="font-medium">Voltar para Produtos</span>
-			</button>
+			{/* Botões de Navegação */}
+			<div className="flex items-center justify-between mb-6">
+				<button
+					onClick={() => navigate("/")}
+					className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+				>
+					<ArrowLeft size={20} />
+					<span className="font-medium">Voltar para Produtos</span>
+				</button>
+				
+				{/* Botão Editar - Apenas para Admin */}
+				{userInfo?.isAdmin && (
+					<button
+						onClick={() => navigate(`/admin/editar-produto/${id}`)}
+						className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+					>
+						<Pencil size={18} />
+						<span className="font-medium">Editar Produto</span>
+					</button>
+				)}
+			</div>
 
 			<div className="bg-white rounded-xl border border-blue-200 overflow-hidden">
 				<div className="grid grid-cols-1 md:grid-cols-2">
