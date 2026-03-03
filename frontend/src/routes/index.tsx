@@ -7,6 +7,7 @@ import UserProvider from "../hook/auth";
 import PrivateRoutes from "./PrivateRoutes";
 import { AdminLayout } from "../layout/AdminLayout";
 import { PublicProducts } from "../pages/PublicProducts";
+import { ProductDetails } from "../pages/ProductDetails";
 
 export const AppRoutes = () => {
 	return (
@@ -14,8 +15,9 @@ export const AppRoutes = () => {
 			<BrowserRouter>
 				<Routes>
 					<Route element={<UserLayout />}>
-							<Route path="/" element={<PublicProducts />} />
-						</Route>
+						<Route path="/" element={<PublicProducts />} />
+						<Route path="/produto/:id" element={<ProductDetails />} />
+					</Route>
 					<Route element={<PrivateRoutes />}>
 						<Route path="/admin" element={<AdminLayout/>}>
 							<Route path="/admin/novo-produto" element={<Home />} />

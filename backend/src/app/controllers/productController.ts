@@ -99,6 +99,9 @@ class ProductController {
 				where: {
 					id: String(req.params.productId),
 				},
+				include: {
+					category: true,
+				},
 			});
 
 			if (!product) {

@@ -1,7 +1,10 @@
 import type React from "react";
+import { Link } from "react-router";
 import { PriceConverter } from "../utils/priceConverter";
+import { Package } from "lucide-react";
 
 interface ProductCardProps {
+	id: string;
 	name: string;
 	category: string;
 	description: string;
@@ -96,6 +99,7 @@ const getStatusBadge = (isActive: boolean): StatusBadge => {
 };
 
 export const Card: React.FC<ProductCardProps> = ({
+	id,
 	name,
 	category,
 	description,
@@ -111,10 +115,19 @@ export const Card: React.FC<ProductCardProps> = ({
 	const statusBadge = getStatusBadge(isActive);
 
 	return (
-		<div className="w-full h-full bg-white rounded-lg border border-blue-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+		<Link
+			to={`/produto/${id}`}
+			className="block w-full h-full bg-white rounded-lg border border-blue-200 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+		>
 			{/* Imagem do Produto */}
 			<div className="relative bg-gray-50">
-				<img src={imageUrl} alt={name} className="w-full h-64 object-contain" />
+				{imageUrl ? (
+					<img src={imageUrl} alt={name} className="w-full h-64 object-contain" />
+				) : (
+					<div className="w-full h-64 flex items-center justify-center bg-gray-100">
+						<Package size={48} className="text-gray-400" />
+					</div>
+				)}
 
 				{/* Badge de Status - Sempre exibe com cor baseada no boolean */}
 				<div
@@ -159,6 +172,6 @@ export const Card: React.FC<ProductCardProps> = ({
 					</span>
 				</div>
 			</div>
-		</div>
+		</Link>
 	);
 };

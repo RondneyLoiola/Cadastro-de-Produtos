@@ -148,18 +148,6 @@ export const Login = () => {
 							)}
 						</div>
 						<Button type="submit">Entrar</Button>
-						<div className="flex flex-col gap-4 items-center justify-center">
-							<div className="w-full border-b border-blue-100" />
-							<p className="text-center">
-								Ainda não tem conta?{" "}
-								<span
-									className="text-blue-500 cursor-pointer"
-									onClick={() => navigate("/cadastro")}
-								>
-									Faça o Cadastro
-								</span>
-							</p>
-						</div>
 					</form>
 				</div>
 			</div>

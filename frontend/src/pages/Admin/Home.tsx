@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: useEffect */
 
 //TODO: revisar backend
-//TODO: ajeitar layout public
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
