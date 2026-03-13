@@ -4,7 +4,7 @@ import { PriceConverter } from "../utils/priceConverter";
 import { Package } from "lucide-react";
 
 interface ProductCardProps {
-	id: string;
+	id?: string;
 	name: string;
 	category: string;
 	description: string;
