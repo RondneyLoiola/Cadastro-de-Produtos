@@ -1,5 +1,9 @@
 # 📦 Sistema de Cadastro de Produtos
 
+<img src='./imgs/nexus1.png' alt='nexus1.img'>
+<img src='./imgs/nexus2.png' alt='nexus2.img'>
+<img src='./imgs/nexus3.png' alt='nexus3.img'>
+
 Um sistema completo de cadastro de produtos desenvolvido com arquitetura Full Stack, permitindo criar, visualizar, editar e excluir produtos de forma intuitiva.
 
 ## 🚀 Tecnologias Utilizadas
