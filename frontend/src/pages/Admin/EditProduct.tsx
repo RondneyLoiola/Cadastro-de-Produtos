@@ -32,7 +32,7 @@ export const EditProduct = () => {
 	const navigate = useNavigate();
 	const { userInfo } = useUser();
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [product, setProduct] = useState<Product | null>(null);
+	const [_product, setProduct] = useState<Product | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
@@ -52,7 +52,6 @@ export const EditProduct = () => {
 	const {
 		register,
 		handleSubmit,
-		reset,
 		setValue,
 		formState: { errors, isSubmitting },
 	} = useForm<FormData>({
